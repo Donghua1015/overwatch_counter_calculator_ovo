@@ -1985,7 +1985,7 @@ function calculate(manual) {
         // Color: 0 = red(hsl 0), max = green(hsl 120)
         const ratio = item.score / globalMax;
         const hue = Math.round(120 * ratio);
-        const cardBg = `hsl(${hue}, 65%, 32%)`;
+        const cardBg = `hsla(${hue}, 70%, 30%, 0.35)`;
         html += `<div class="result-hero-card" style="background:${cardBg};" data-tooltip="${heroDisplayName(item.hero.id, item.hero.name)}" onclick="showFormulaBreakdown('${item.hero.id}')">
           <div class="rank-badge">#${i + 1}</div>
           <img src="${item.hero.portrait}" alt="${item.hero.name}" loading="lazy">
