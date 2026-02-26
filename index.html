@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
-<title>OW2 Counter Calculator</title>
+<title>OW Counter Calculator</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -826,14 +826,18 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 <body>
 
 <header class="header">
-  <h1>OW2 Counter Calc</h1>
+  <select class="ow-select" id="langSelect" onchange="switchLang(this.value)" style="width:auto;padding:4px 8px;font-size:12px;flex-shrink:0;">
+    <option value="en">EN</option>
+    <option value="zh">中文</option>
+  </select>
+  <h1 data-i18n="title">OW Counter Calculator</h1>
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('calculator')">Calculator</button>
-    <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
+    <button class="tab-btn active" onclick="switchTab('calculator')" data-i18n="tab_calculator">Calculator</button>
+    <button class="tab-btn" onclick="switchTab('settings')" data-i18n="tab_settings">Settings</button>
   </div>
   <div class="status-bar">
     <div class="status-dot" id="dataStatusDot"></div>
-    <span id="dataStatusText">No data loaded</span>
+    <span id="dataStatusText" data-i18n="status_no_data">No data loaded</span>
   </div>
 </header>
 
@@ -842,28 +846,28 @@ select.ow-select:focus { border-color: var(--accent-orange); }
   <!-- Config: Rank + Map + Proxy -->
   <div class="config-row">
     <div class="config-item" style="flex:0.6;">
-      <div class="section-title">Rank</div>
+      <div class="section-title" data-i18n="rank">Rank</div>
       <select class="ow-select" id="rankSelect" onchange="onConfigChange()">
-        <option value="All">All Tiers</option>
-        <option value="Bronze">Bronze</option>
-        <option value="Silver">Silver</option>
-        <option value="Gold">Gold</option>
-        <option value="Platinum" selected>Platinum</option>
-        <option value="Diamond">Diamond</option>
-        <option value="Master">Master</option>
-        <option value="Grandmaster">Grandmaster &amp; Champion</option>
+        <option value="All" data-i18n="rank_all">All Tiers</option>
+        <option value="Bronze" data-i18n="rank_bronze">Bronze</option>
+        <option value="Silver" data-i18n="rank_silver">Silver</option>
+        <option value="Gold" data-i18n="rank_gold">Gold</option>
+        <option value="Platinum" selected data-i18n="rank_platinum">Platinum</option>
+        <option value="Diamond" data-i18n="rank_diamond">Diamond</option>
+        <option value="Master" data-i18n="rank_master">Master</option>
+        <option value="Grandmaster" data-i18n="rank_gm">Grandmaster &amp; Champion</option>
       </select>
     </div>
     <div class="config-item" style="flex:0.6;">
-      <div class="section-title">Region</div>
+      <div class="section-title" data-i18n="region">Region</div>
       <select class="ow-select" id="regionSelect" onchange="onConfigChange()">
-        <option value="Americas" selected>Americas</option>
-        <option value="Europe">Europe</option>
-        <option value="Asia">Asia</option>
+        <option value="Americas" selected data-i18n="region_americas">Americas</option>
+        <option value="Europe" data-i18n="region_europe">Europe</option>
+        <option value="Asia" data-i18n="region_asia">Asia</option>
       </select>
     </div>
     <div class="config-item" style="flex:2;">
-      <div class="section-title">CORS Proxy</div>
+      <div class="section-title" data-i18n="cors_proxy">CORS Proxy</div>
       <div style="display:flex;gap:8px;">
         <select class="ow-select" id="proxySelect" style="flex:1;" onchange="onProxySelect()">
           <option value="https://corsproxy.io/?url=">corsproxy.io (free)</option>
@@ -873,7 +877,7 @@ select.ow-select:focus { border-color: var(--accent-orange); }
         </select>
         <input class="proxy-input" id="proxyInput" value="https://corsproxy.io/?url=" placeholder="Proxy URL prefix..." style="flex:1.5;">
       </div>
-      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" data-i18n="proxy_help">
         If Fetch fails, try switching to a different proxy. Free proxies may be unstable.
       </div>
     </div>
@@ -881,23 +885,23 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- Map selection -->
   <div class="select-section" style="margin-bottom:16px;">
-    <div class="section-title">Select Map</div>
+    <div class="section-title" data-i18n="select_map">Select Map</div>
     <div class="map-grid" id="mapGrid"></div>
   </div>
 
   <!-- Enemy selection -->
-  <div class="section-title">Select Enemy Team (1 Tank + 2 DPS + 2 Support)</div>
+  <div class="section-title" data-i18n="select_enemy">Select Enemy Team</div>
   <div class="enemy-columns" id="enemyColumns">
     <div class="role-column">
-      <div class="role-header tank">Tank (1)</div>
+      <div class="role-header tank" data-i18n="role_tank_1">Tank (1)</div>
       <div class="hero-grid" id="enemy-tank-grid"></div>
     </div>
     <div class="role-column">
-      <div class="role-header damage">Damage (2)</div>
+      <div class="role-header damage" data-i18n="role_damage_2">Damage (2)</div>
       <div class="hero-grid" id="enemy-damage-grid"></div>
     </div>
     <div class="role-column">
-      <div class="role-header support">Support (2)</div>
+      <div class="role-header support" data-i18n="role_support_2">Support (2)</div>
       <div class="hero-grid" id="enemy-support-grid"></div>
     </div>
   </div>
@@ -905,30 +909,24 @@ select.ow-select:focus { border-color: var(--accent-orange); }
   <!-- Actions -->
   <div style="margin-top:16px;">
     <div class="action-row">
-      <button class="btn-primary" id="fetchBtn" onclick="fetchStats()">Fetch Stats</button>
-      <button class="btn-primary" onclick="calculate(true)" style="background:var(--accent-blue);">Calculate</button>
-      <button class="btn-secondary" onclick="clearEnemySelection()">Clear Selection</button>
-      <button class="btn-secondary" onclick="toggleManualImport()">Manual Import</button>
+      <button class="btn-primary" id="fetchBtn" onclick="fetchStats()" data-i18n="fetch_stats">Fetch Stats</button>
+      <button class="btn-primary" onclick="calculate(true)" style="background:var(--accent-blue);" data-i18n="calculate">Calculate</button>
+      <button class="btn-secondary" onclick="clearEnemySelection()" data-i18n="clear_selection">Clear Selection</button>
+      <button class="btn-secondary" onclick="toggleManualImport()" data-i18n="manual_import">Manual Import</button>
       <span class="fetch-status" id="fetchStatus"></span>
-    </div>
-    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">
-      Fetch not working? Switch proxy above, or use Manual Import. Paid options for stability:
-      <a href="https://www.scraperapi.com" style="color:var(--accent-blue);" target="_blank">ScraperAPI</a> |
-      <a href="https://brightdata.com" style="color:var(--accent-blue);" target="_blank">Bright Data</a> |
-      <a href="https://www.scrapingbee.com" style="color:var(--accent-blue);" target="_blank">ScrapingBee</a>
     </div>
   </div>
 
   <!-- Manual HTML Paste Import -->
   <div class="select-section" id="manualImportSection" style="margin-top:12px;display:none;">
-    <div class="section-title">Manual Source Code Import</div>
-    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">
+    <div class="section-title" data-i18n="manual_source_import">Manual Source Code Import</div>
+    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;" data-i18n-html="manual_import_help">
       Open the Blizzard stats page in your browser, right-click &gt; View Page Source, copy all, and paste below.<br>
       URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&amp;map=busan&amp;region=Americas&amp;role=All&amp;rq=1&amp;tier=Platinum</code>
     </div>
-    <textarea id="manualHtmlTextarea" style="font-family:monospace;font-size:11px;width:100%;height:140px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;padding:8px;resize:vertical;outline:none;" placeholder="Paste the full HTML source code here..."></textarea>
+    <textarea id="manualHtmlTextarea" style="font-family:monospace;font-size:11px;width:100%;height:140px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;padding:8px;resize:vertical;outline:none;" data-i18n-placeholder="manual_paste_placeholder" placeholder="Paste the full HTML source code here..."></textarea>
     <div style="margin-top:8px;display:flex;gap:8px;">
-      <button class="btn-primary" onclick="parseManualHtml()">Parse HTML</button>
+      <button class="btn-primary" onclick="parseManualHtml()" data-i18n="parse_html">Parse HTML</button>
       <span class="fetch-status" id="manualParseStatus"></span>
     </div>
   </div>
@@ -936,15 +934,15 @@ select.ow-select:focus { border-color: var(--accent-orange); }
   <!-- Formula Breakdown -->
   <div class="formula-section" id="formulaSection" style="display:none;">
     <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
-      <span>Score Breakdown</span>
-      <span style="font-size:12px;cursor:pointer;color:var(--text-muted);opacity:0.7;" onclick="document.getElementById('formulaSection').style.display='none'">CLOSE &times;</span>
+      <span data-i18n="score_breakdown">Score Breakdown</span>
+      <span style="font-size:12px;cursor:pointer;color:var(--text-muted);opacity:0.7;" onclick="document.getElementById('formulaSection').style.display='none'" data-i18n="close">CLOSE &times;</span>
     </div>
     <div id="formulaContainer"></div>
   </div>
 
   <!-- Results -->
   <div class="results-section" id="resultsSection" style="display:none;">
-    <div class="section-title">Recommendations</div>
+    <div class="section-title" data-i18n="recommendations">Recommendations</div>
     <div id="resultsContainer"></div>
   </div>
 </div>
@@ -954,38 +952,38 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- Counter & Role Weight Settings -->
   <div class="settings-section">
-    <div class="section-title">Multiplier Settings</div>
+    <div class="section-title" data-i18n="multiplier_settings">Multiplier Settings</div>
     <div class="settings-grid">
       <div class="setting-item">
-        <label>Hero Base Score</label>
+        <label data-i18n="hero_base_score">Hero Base Score</label>
         <input type="number" id="baseScore" value="10" step="1" min="0">
       </div>
       <div class="setting-item">
-        <label>Normal Counter Value</label>
+        <label data-i18n="normal_counter_value">Normal Counter Value</label>
         <input type="number" id="counterNormal" value="1" step="0.5" min="0">
       </div>
       <div class="setting-item">
-        <label>Hard Counter Value</label>
+        <label data-i18n="hard_counter_value">Hard Counter Value</label>
         <input type="number" id="counterHard" value="1.5" step="0.5" min="0">
       </div>
       <div class="setting-item">
-        <label>Penalty Factor</label>
+        <label data-i18n="penalty_factor">Penalty Factor</label>
         <input type="number" id="penaltyFactor" value="1" step="0.05" min="0" max="2">
       </div>
       <div class="setting-item">
-        <label>Tank Role Weight</label>
+        <label data-i18n="tank_role_weight">Tank Role Weight</label>
         <input type="number" id="weightTank" value="2" step="0.5" min="0">
       </div>
       <div class="setting-item">
-        <label>DPS Role Weight</label>
+        <label data-i18n="dps_role_weight">DPS Role Weight</label>
         <input type="number" id="weightDamage" value="1" step="0.5" min="0">
       </div>
       <div class="setting-item">
-        <label>Support Role Weight</label>
+        <label data-i18n="support_role_weight">Support Role Weight</label>
         <input type="number" id="weightSupport" value="1" step="0.5" min="0">
       </div>
     </div>
-    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);" data-i18n-html="formula_desc">
       Score = max(0, base + Σ(counter_value x role_weight) - Σ(enemy_counter_value x role_weight x penalty)) x winrate/50.<br>
       Penalty Factor controls how much being countered by enemies reduces score (0 = ignore, 1 = full penalty).
     </div>
@@ -993,20 +991,20 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- DPS Subcategories -->
   <div class="settings-section">
-    <div class="section-title">DPS Subcategories</div>
+    <div class="section-title" data-i18n="dps_subcategories">DPS Subcategories</div>
     <div class="category-section">
-      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;">
+      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;" data-i18n-html="dps_cycle_help">
         Click to cycle: None → <span style="color:var(--dps-color);">Hitscan</span> →
         <span style="color:#ff9800;">Dive</span> →
         <span style="color:#ff6b6b;">Both</span> → None.
         Heroes marked "Both" appear in both recommendation lists.
       </div>
       <div class="filter-row">
-        <button class="filter-btn active" onclick="filterDpsCat('all', this)">All</button>
-        <button class="filter-btn" onclick="filterDpsCat('hitscan', this)">Hitscan Only</button>
-        <button class="filter-btn" onclick="filterDpsCat('dive', this)">Dive Only</button>
-        <button class="filter-btn" onclick="filterDpsCat('both', this)">Both</button>
-        <button class="filter-btn" onclick="filterDpsCat('unset', this)">Unassigned</button>
+        <button class="filter-btn active" onclick="filterDpsCat('all', this)" data-i18n="filter_all">All</button>
+        <button class="filter-btn" onclick="filterDpsCat('hitscan', this)" data-i18n="filter_hitscan_only">Hitscan Only</button>
+        <button class="filter-btn" onclick="filterDpsCat('dive', this)" data-i18n="filter_dive_only">Dive Only</button>
+        <button class="filter-btn" onclick="filterDpsCat('both', this)" data-i18n="filter_both">Both</button>
+        <button class="filter-btn" onclick="filterDpsCat('unset', this)" data-i18n="filter_unassigned">Unassigned</button>
       </div>
       <div class="category-hero-list" id="dpsCategoryList"></div>
     </div>
@@ -1014,20 +1012,20 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- Support Subcategories -->
   <div class="settings-section">
-    <div class="section-title">Support Subcategories</div>
+    <div class="section-title" data-i18n="support_subcategories">Support Subcategories</div>
     <div class="category-section">
-      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;">
+      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;" data-i18n-html="supp_cycle_help">
         Click to cycle: None → <span style="color:var(--support-color);">Flex</span> →
         <span style="color:#4dd0e1;">Main</span> →
         <span style="color:#66ffcc;">Both</span> → None.
         Heroes marked "Both" appear in both recommendation lists.
       </div>
       <div class="filter-row">
-        <button class="filter-btn active" onclick="filterSuppCat('all', this)">All</button>
-        <button class="filter-btn" onclick="filterSuppCat('flex', this)">Flex Only</button>
-        <button class="filter-btn" onclick="filterSuppCat('main', this)">Main Only</button>
-        <button class="filter-btn" onclick="filterSuppCat('both', this)">Both</button>
-        <button class="filter-btn" onclick="filterSuppCat('unset', this)">Unassigned</button>
+        <button class="filter-btn active" onclick="filterSuppCat('all', this)" data-i18n="filter_all">All</button>
+        <button class="filter-btn" onclick="filterSuppCat('flex', this)" data-i18n="filter_flex_only">Flex Only</button>
+        <button class="filter-btn" onclick="filterSuppCat('main', this)" data-i18n="filter_main_only">Main Only</button>
+        <button class="filter-btn" onclick="filterSuppCat('both', this)" data-i18n="filter_both">Both</button>
+        <button class="filter-btn" onclick="filterSuppCat('unset', this)" data-i18n="filter_unassigned">Unassigned</button>
       </div>
       <div class="category-hero-list" id="suppCategoryList"></div>
     </div>
@@ -1035,21 +1033,21 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- Counter Matrix -->
   <div class="settings-section">
-    <div class="section-title">Counter Relationships</div>
-    <div style="margin-bottom:8px;color:var(--text-secondary);font-size:13px;">
+    <div class="section-title" data-i18n="counter_relationships">Counter Relationships</div>
+    <div style="margin-bottom:8px;color:var(--text-secondary);font-size:13px;" data-i18n-html="counter_help">
       For each hero, click target heroes below to set counter relationships.<br>
       Click once = <span style="color:var(--counter-normal);">Normal Counter (yellow)</span>,
       twice = <span style="color:var(--counter-hard);">Hard Counter (red)</span>,
       three times = remove.
     </div>
     <div class="filter-row">
-      <button class="filter-btn active" onclick="filterCounterRole('all', this)">All Heroes</button>
-      <button class="filter-btn" onclick="filterCounterRole('TANK', this)">Tanks</button>
-      <button class="filter-btn" onclick="filterCounterRole('DAMAGE', this)">DPS</button>
-      <button class="filter-btn" onclick="filterCounterRole('SUPPORT', this)">Support</button>
+      <button class="filter-btn active" onclick="filterCounterRole('all', this)" data-i18n="filter_all_heroes">All Heroes</button>
+      <button class="filter-btn" onclick="filterCounterRole('TANK', this)" data-i18n="filter_tanks">Tanks</button>
+      <button class="filter-btn" onclick="filterCounterRole('DAMAGE', this)" data-i18n="filter_dps">DPS</button>
+      <button class="filter-btn" onclick="filterCounterRole('SUPPORT', this)" data-i18n="filter_support">Support</button>
       <span style="margin-left:auto;font-size:12px;color:var(--text-muted);">
-        <button class="btn-secondary" onclick="expandAllCounters()">Expand All</button>
-        <button class="btn-secondary" onclick="collapseAllCounters()">Collapse All</button>
+        <button class="btn-secondary" onclick="expandAllCounters()" data-i18n="expand_all">Expand All</button>
+        <button class="btn-secondary" onclick="collapseAllCounters()" data-i18n="collapse_all">Collapse All</button>
       </span>
     </div>
     <div class="counter-matrix" id="counterMatrix"></div>
@@ -1057,21 +1055,370 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
   <!-- Import / Export -->
   <div class="settings-section">
-    <div class="section-title">Import / Export All Settings</div>
+    <div class="section-title" data-i18n="import_export">Import / Export All Settings</div>
     <div class="io-section">
       <div style="display:flex;gap:8px;margin-bottom:8px;">
-        <button class="btn-primary" onclick="exportSettings()">Export</button>
-        <button class="btn-primary" onclick="importSettings()" style="background:var(--accent-blue);">Import</button>
-        <button class="btn-secondary" onclick="saveToLocal()">Save to Browser</button>
-        <button class="btn-secondary" onclick="loadFromLocal()">Load from Browser</button>
-        <button class="btn-danger" onclick="resetAllSettings()">Reset All</button>
+        <button class="btn-primary" onclick="exportSettings()" data-i18n="export">Export</button>
+        <button class="btn-primary" onclick="importSettings()" style="background:var(--accent-blue);" data-i18n="import">Import</button>
+        <button class="btn-secondary" onclick="saveToLocal()" data-i18n="save_to_browser">Save to Browser</button>
+        <button class="btn-secondary" onclick="loadFromLocal()" data-i18n="load_from_browser">Load from Browser</button>
+        <button class="btn-danger" onclick="resetAllSettings()" data-i18n="reset_all">Reset All</button>
       </div>
-      <textarea id="ioTextarea" placeholder="Paste JSON here to import, or click Export to generate..."></textarea>
+      <textarea id="ioTextarea" data-i18n-placeholder="io_placeholder" placeholder="Paste JSON here to import, or click Export to generate..."></textarea>
     </div>
   </div>
 </div>
 
 <script>
+// i18n Translation System
+let currentLang = 'en';
+
+const I18N = {
+  en: {
+    title: 'OW Counter Calculator',
+    tab_calculator: 'Calculator',
+    tab_settings: 'Settings',
+    status_no_data: 'No data loaded',
+    rank: 'Rank',
+    rank_all: 'All Tiers',
+    rank_bronze: 'Bronze',
+    rank_silver: 'Silver',
+    rank_gold: 'Gold',
+    rank_platinum: 'Platinum',
+    rank_diamond: 'Diamond',
+    rank_master: 'Master',
+    rank_gm: 'Grandmaster & Champion',
+    region: 'Region',
+    region_americas: 'Americas',
+    region_europe: 'Europe',
+    region_asia: 'Asia',
+    cors_proxy: 'CORS Proxy',
+    proxy_help: 'If Fetch fails, try switching to a different proxy. Free proxies may be unstable.',
+    select_map: 'Select Map',
+    select_enemy: 'Select Enemy Team',
+    role_tank_1: 'Tank (1)',
+    role_damage_2: 'Damage (2)',
+    role_support_2: 'Support (2)',
+    fetch_stats: 'Fetch Stats',
+    calculate: 'Calculate',
+    clear_selection: 'Clear Selection',
+    manual_import: 'Manual Import',
+    manual_source_import: 'Manual Source Code Import',
+    manual_import_help: 'Open the Blizzard stats page in your browser, right-click > View Page Source, copy all, and paste below.<br>URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=1&tier=Platinum</code>',
+    manual_paste_placeholder: 'Paste the full HTML source code here...',
+    parse_html: 'Parse HTML',
+    score_breakdown: 'Score Breakdown',
+    close: 'CLOSE \u00d7',
+    recommendations: 'Recommendations',
+    multiplier_settings: 'Multiplier Settings',
+    hero_base_score: 'Hero Base Score',
+    normal_counter_value: 'Normal Counter Value',
+    hard_counter_value: 'Hard Counter Value',
+    penalty_factor: 'Penalty Factor',
+    tank_role_weight: 'Tank Role Weight',
+    dps_role_weight: 'DPS Role Weight',
+    support_role_weight: 'Support Role Weight',
+    formula_desc: 'Score = max(0, base + \u03a3(counter_value x role_weight) - \u03a3(enemy_counter_value x role_weight x penalty)) x winrate/50.<br>Penalty Factor controls how much being countered by enemies reduces score (0 = ignore, 1 = full penalty).',
+    dps_subcategories: 'DPS Subcategories',
+    dps_cycle_help: 'Click to cycle: None \u2192 <span style="color:var(--dps-color);">Hitscan</span> \u2192 <span style="color:#ff9800;">Dive</span> \u2192 <span style="color:#ff6b6b;">Both</span> \u2192 None. Heroes marked "Both" appear in both recommendation lists.',
+    support_subcategories: 'Support Subcategories',
+    supp_cycle_help: 'Click to cycle: None \u2192 <span style="color:var(--support-color);">Flex</span> \u2192 <span style="color:#4dd0e1;">Main</span> \u2192 <span style="color:#66ffcc;">Both</span> \u2192 None. Heroes marked "Both" appear in both recommendation lists.',
+    filter_all: 'All',
+    filter_hitscan_only: 'Hitscan Only',
+    filter_dive_only: 'Dive Only',
+    filter_flex_only: 'Flex Only',
+    filter_main_only: 'Main Only',
+    filter_both: 'Both',
+    filter_unassigned: 'Unassigned',
+    counter_relationships: 'Counter Relationships',
+    counter_help: 'For each hero, click target heroes below to set counter relationships.<br>Click once = <span style="color:var(--counter-normal);">Normal Counter (yellow)</span>, twice = <span style="color:var(--counter-hard);">Hard Counter (red)</span>, three times = remove.',
+    filter_all_heroes: 'All Heroes',
+    filter_tanks: 'Tanks',
+    filter_dps: 'DPS',
+    filter_support: 'Support',
+    expand_all: 'Expand All',
+    collapse_all: 'Collapse All',
+    import_export: 'Import / Export All Settings',
+    export: 'Export',
+    import: 'Import',
+    save_to_browser: 'Save to Browser',
+    load_from_browser: 'Load from Browser',
+    reset_all: 'Reset All',
+    io_placeholder: 'Paste JSON here to import, or click Export to generate...',
+    all_maps: 'All Maps',
+    map_type_control: 'Control',
+    map_type_escort: 'Escort',
+    map_type_flashpoint: 'Flashpoint',
+    map_type_hybrid: 'Hybrid',
+    map_type_push: 'Push',
+    fetching_data: 'Fetching data...',
+    fetching_all_heroes: 'Fetching all heroes...',
+    fetching_role: 'Fetching {role}...',
+    loaded_heroes: 'Loaded {count} heroes for {tier} / {map}',
+    data_label: 'Data: {tier} / {map}',
+    no_data_parsed: 'No data parsed',
+    fetch_failed: 'Fetch failed: {msg} (try different proxy or Manual Import)',
+    fetch_failed_short: 'Fetch failed',
+    settings_loaded: 'Settings loaded from browser',
+    defaults_updated: 'Defaults updated (v{ver})',
+    paste_json_first: 'Paste JSON data first.',
+    settings_imported: 'Settings imported successfully!',
+    import_failed: 'Import failed: {msg}',
+    saved_to_browser: 'Saved to browser storage.',
+    save_failed: 'Save failed: {msg}',
+    no_saved_data: 'No saved data found.',
+    loaded_from_browser: 'Loaded from browser storage.',
+    load_failed: 'Load failed: {msg}',
+    reset_confirm: 'Reset ALL settings to defaults? This cannot be undone.',
+    all_reset: 'All settings reset to defaults.',
+    select_enemy_first: 'Please select at least one enemy hero.',
+    paste_html_first: 'Paste HTML source code first.',
+    no_hero_data: 'No hero data found. Make sure you pasted the full page source.',
+    parsed_heroes: 'Parsed {count} heroes successfully!',
+    data_manual: 'Data: {tier} / {map} (manual)',
+    counters_label: '{count} counters',
+    no_heroes_in_cat: 'No heroes in this category. Configure in Settings.',
+    pos_tank: 'Tank',
+    pos_hitscan: 'Hitscan DPS',
+    pos_dive: 'Dive DPS',
+    pos_flex: 'Flex Support',
+    pos_main: 'Main Support',
+    formula_base: 'Base Score',
+    formula_bonuses: 'Counter Bonuses (I counter them)',
+    formula_bonuses_short: 'Counter Bonuses',
+    formula_no_counters: 'No counters (+0)',
+    formula_penalties: 'Enemy Counters Me (penalty \u00d7{pf})',
+    formula_penalties_short: 'Enemy Counters Me',
+    formula_no_threats: 'No threats (\u22120)',
+    formula_subtotal: 'Subtotal',
+    formula_wr: 'Winrate Multiplier',
+    formula_no_wr: 'No WR data (\u00d71)',
+    final_score: 'Final Score: {score} pts',
+    unit_pts: 'pts',
+    label_wr: 'WR',
+    label_pr: 'PR',
+    cat_both: 'BOTH',
+    cat_hit: 'HIT',
+    cat_dive: 'DIVE',
+    cat_flex: 'FLEX',
+    cat_main: 'MAIN'
+  },
+  zh: {
+    title: 'OW 克制计算器',
+    tab_calculator: '计算器',
+    tab_settings: '设置',
+    status_no_data: '未加载数据',
+    rank: '段位',
+    rank_all: '所有段位',
+    rank_bronze: '青铜',
+    rank_silver: '白银',
+    rank_gold: '黄金',
+    rank_platinum: '铂金',
+    rank_diamond: '钻石',
+    rank_master: '大师',
+    rank_gm: '宗师 & 英杰',
+    region: '区域',
+    region_americas: '美洲',
+    region_europe: '欧洲',
+    region_asia: '亚洲',
+    cors_proxy: 'CORS 代理',
+    proxy_help: '如果获取失败，请尝试切换其他代理。免费代理可能不稳定。',
+    select_map: '选择地图',
+    select_enemy: '选择敌方阵容',
+    role_tank_1: '坦克 (1)',
+    role_damage_2: '输出 (2)',
+    role_support_2: '辅助 (2)',
+    fetch_stats: '获取数据',
+    calculate: '计算',
+    clear_selection: '清除选择',
+    manual_import: '手动导入',
+    manual_source_import: '手动源码导入',
+    manual_import_help: '在浏览器中打开暴雪数据页面，右键 > 查看页面源代码，全选复制后粘贴到下方。<br>URL 示例：<code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=1&tier=Platinum</code>',
+    manual_paste_placeholder: '在此粘贴完整的 HTML 源代码...',
+    parse_html: '解析 HTML',
+    score_breakdown: '分数拆解',
+    close: '关闭 \u00d7',
+    recommendations: '推荐英雄',
+    multiplier_settings: '乘数设置',
+    hero_base_score: '英雄基础分',
+    normal_counter_value: '克制值',
+    hard_counter_value: '强克制值',
+    penalty_factor: '惩罚系数',
+    tank_role_weight: '坦克权重',
+    dps_role_weight: '输出权重',
+    support_role_weight: '辅助权重',
+    formula_desc: '分数 = max(0, 基础分 + \u03a3(克制值 x 职责权重) - \u03a3(敌方克制值 x 职责权重 x 惩罚系数)) x 胜率/50。<br>惩罚系数控制被敌方克制时的减分幅度（0 = 忽略，1 = 全额惩罚）。',
+    dps_subcategories: '输出子分类',
+    dps_cycle_help: '点击切换：无 \u2192 <span style="color:var(--dps-color);">枪位</span> \u2192 <span style="color:#ff9800;">机动位</span> \u2192 <span style="color:#ff6b6b;">皆可</span> \u2192 无。标记为"皆可"的英雄会同时出现在两个推荐列表中。',
+    support_subcategories: '辅助子分类',
+    supp_cycle_help: '点击切换：无 \u2192 <span style="color:var(--support-color);">副辅</span> \u2192 <span style="color:#4dd0e1;">主辅</span> \u2192 <span style="color:#66ffcc;">皆可</span> \u2192 无。标记为"皆可"的英雄会同时出现在两个推荐列表中。',
+    filter_all: '全部',
+    filter_hitscan_only: '仅枪位',
+    filter_dive_only: '仅机动位',
+    filter_flex_only: '仅副辅',
+    filter_main_only: '仅主辅',
+    filter_both: '皆可',
+    filter_unassigned: '未分配',
+    counter_relationships: '克制关系',
+    counter_help: '点击下方目标英雄来设置克制关系。<br>点击一次 = <span style="color:var(--counter-normal);">克制（黄色）</span>，两次 = <span style="color:var(--counter-hard);">强克制（红色）</span>，三次 = 移除。',
+    filter_all_heroes: '所有英雄',
+    filter_tanks: '坦克',
+    filter_dps: '输出',
+    filter_support: '辅助',
+    expand_all: '全部展开',
+    collapse_all: '全部折叠',
+    import_export: '导入 / 导出所有设置',
+    export: '导出',
+    import: '导入',
+    save_to_browser: '保存到浏览器',
+    load_from_browser: '从浏览器加载',
+    reset_all: '全部重置',
+    io_placeholder: '在此粘贴 JSON 数据以导入，或点击导出生成...',
+    all_maps: '所有地图',
+    map_type_control: '占领',
+    map_type_escort: '护送',
+    map_type_flashpoint: '闪点',
+    map_type_hybrid: '混合',
+    map_type_push: '推进',
+    fetching_data: '正在获取数据...',
+    fetching_all_heroes: '正在获取所有英雄...',
+    fetching_role: '正在获取 {role}...',
+    loaded_heroes: '已加载 {count} 个英雄：{tier} / {map}',
+    data_label: '数据：{tier} / {map}',
+    no_data_parsed: '未解析到数据',
+    fetch_failed: '获取失败：{msg}（请尝试其他代理或手动导入）',
+    fetch_failed_short: '获取失败',
+    settings_loaded: '已从浏览器加载设置',
+    defaults_updated: '已更新默认值 (v{ver})',
+    paste_json_first: '请先粘贴 JSON 数据。',
+    settings_imported: '设置导入成功！',
+    import_failed: '导入失败：{msg}',
+    saved_to_browser: '已保存到浏览器存储。',
+    save_failed: '保存失败：{msg}',
+    no_saved_data: '未找到已保存的数据。',
+    loaded_from_browser: '已从浏览器存储加载。',
+    load_failed: '加载失败：{msg}',
+    reset_confirm: '确定要将所有设置重置为默认值吗？此操作无法撤销。',
+    all_reset: '所有设置已重置为默认值。',
+    select_enemy_first: '请先选择至少一个敌方英雄。',
+    paste_html_first: '请先粘贴 HTML 源代码。',
+    no_hero_data: '未找到英雄数据。请确保粘贴了完整的页面源代码。',
+    parsed_heroes: '成功解析 {count} 个英雄！',
+    data_manual: '数据：{tier} / {map}（手动）',
+    counters_label: '{count} 个克制',
+    no_heroes_in_cat: '该分类无英雄。请在设置中配置。',
+    pos_tank: '坦克',
+    pos_hitscan: '枪位',
+    pos_dive: '机动位',
+    pos_flex: '副辅',
+    pos_main: '主辅',
+    formula_base: '基础分',
+    formula_bonuses: '克制加成（我克制敌方）',
+    formula_bonuses_short: '克制加成',
+    formula_no_counters: '无克制 (+0)',
+    formula_penalties: '被敌方克制（惩罚 \u00d7{pf}）',
+    formula_penalties_short: '被敌方克制',
+    formula_no_threats: '无威胁 (\u22120)',
+    formula_subtotal: '小计',
+    formula_wr: '胜率乘数',
+    formula_no_wr: '无胜率数据 (\u00d71)',
+    final_score: '最终得分：{score} 点',
+    unit_pts: '点',
+    label_wr: '胜率',
+    label_pr: '选取率',
+    cat_both: '皆可',
+    cat_hit: '枪位',
+    cat_dive: '机动',
+    cat_flex: '副辅',
+    cat_main: '主辅'
+  }
+};
+
+function t(key, params) {
+  let str = (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key;
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      str = str.replace('{' + k + '}', v);
+    }
+  }
+  return str;
+}
+
+function applyI18nToDOM() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    el.innerHTML = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+  document.title = t('title');
+}
+
+function switchLang(lang) {
+  currentLang = lang;
+  try { localStorage.setItem('ow2_lang', lang); } catch(e) {}
+  applyI18nToDOM();
+  renderMapGrid();
+  renderEnemyGrids();
+  updateEnemyUI();
+  renderDpsCategories();
+  renderSuppCategories();
+  renderCounterMatrix();
+}
+
+const MAP_TYPE_I18N = {
+  'Control': 'map_type_control',
+  'Escort': 'map_type_escort',
+  'Flashpoint': 'map_type_flashpoint',
+  'Hybrid': 'map_type_hybrid',
+  'Push': 'map_type_push'
+};
+
+const HERO_NAMES_ZH = {
+  'ana': '安娜', 'anran': '安然', 'ashe': '艾什', 'baptiste': '巴蒂斯特',
+  'bastion': '堡垒', 'brigitte': '布丽吉塔', 'cassidy': '卡西迪', 'dva': 'D.Va',
+  'domina': '多米娜', 'doomfist': '末日铁拳', 'echo': '回声', 'emre': '埃姆雷',
+  'freja': '弗蕾亚', 'genji': '源氏', 'hanzo': '半藏', 'hazard': '骇灾',
+  'illari': '伊拉锐', 'jetpack-cat': '飞天猫', 'junker-queen': '渣客女王',
+  'junkrat': '狂鼠', 'juno': '朱诺', 'kiriko': '雾子', 'lifeweaver': '生命之梭',
+  'lucio': '卢西奥', 'mauga': '毛加', 'mei': '美', 'mercy': '天使',
+  'mizuki': '瑞稀', 'moira': '莫伊拉', 'orisa': '奥丽莎', 'pharah': '法老之鹰',
+  'ramattra': '拉玛刹', 'reaper': '死神', 'reinhardt': '莱因哈特', 'roadhog': '路霸',
+  'sigma': '西格玛', 'sojourn': '索杰恩', 'soldier-76': '士兵：76', 'sombra': '黑影',
+  'symmetra': '秩序之光', 'torbjorn': '托比昂', 'tracer': '猎空', 'vendetta': '斩仇',
+  'venture': '探奇', 'widowmaker': '黑百合', 'winston': '温斯顿',
+  'wrecking-ball': '破坏球', 'wuyang': '无漾', 'zarya': '查莉娅', 'zenyatta': '禅雅塔'
+};
+
+const MAP_NAMES_ZH = {
+  'busan': '釜山', 'ilios': '伊利奥斯', 'lijiang-tower': '漓江塔',
+  'nepal': '尼泊尔', 'oasis': '绿洲', 'samoa': '萨摩亚',
+  'circuit-royal': '皇家赛道', 'dorado': '多拉多', 'havana': '哈瓦那',
+  'junkertown': '渣客镇', 'rialto': '里阿尔托', 'route-66': '66号公路',
+  'shambali-monastery': '香巴里寺院', 'watchpoint-gibraltar': '监测站：直布罗陀',
+  'aatlis': '阿特利斯', 'new-junk-city': '渣客城', 'suravasa': '苏拉瓦萨',
+  'blizzard-world': '暴雪世界', 'eichenwalde': '艾兴瓦尔德', 'hollywood': '好莱坞',
+  'kings-row': '国王大道', 'midtown': '中城', 'numbani': '努巴尼', 'paraiso': '帕拉伊苏',
+  'colosseo': '斗兽场', 'esperanca': '埃斯佩兰萨', 'new-queen-street': '新皇后街',
+  'runasapi': '鲁纳塞彼'
+};
+
+function heroDisplayName(heroId, heroName) {
+  if (currentLang === 'zh' && HERO_NAMES_ZH[heroId]) return HERO_NAMES_ZH[heroId];
+  return heroName;
+}
+
+function mapDisplayName(mapId, mapName) {
+  if (currentLang === 'zh' && MAP_NAMES_ZH[mapId]) return MAP_NAMES_ZH[mapId];
+  return mapName;
+}
+
 // ======================================================
 // DATA
 // ======================================================
@@ -1297,12 +1644,14 @@ function renderMapGrid() {
   const grid = document.getElementById('mapGrid');
   let html = `<div class="map-card ${selectedMap === 'all-maps' ? 'selected' : ''}" onclick="selectMap('all-maps', this)">
     <div style="height:72px;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">ALL</div>
-    <div class="map-info"><div class="map-type">All</div>All Maps</div></div>`;
+    <div class="map-info"><div class="map-type">${t('filter_all')}</div>${t('all_maps')}</div></div>`;
   for (const [type, maps] of Object.entries(MAPS)) {
+    const typeLabel = t(MAP_TYPE_I18N[type] || 'map_type_control');
     maps.forEach(m => {
+      const displayName = mapDisplayName(m.id, m.name);
       html += `<div class="map-card ${selectedMap === m.id ? 'selected' : ''}" onclick="selectMap('${m.id}', this)">
         <img src="${m.img}" alt="${m.name}" loading="lazy">
-        <div class="map-info"><div class="map-type">${type}</div>${m.name}</div></div>`;
+        <div class="map-info"><div class="map-type">${typeLabel}</div>${displayName}</div></div>`;
     });
   }
   grid.innerHTML = html;
@@ -1346,7 +1695,7 @@ function renderEnemyGrids() {
       <div class="hero-icon" id="enemy-${h.id}" data-hero="${h.id}" data-role="${role}"
            onclick="toggleEnemy('${h.id}','${role}')">
         <img src="${h.portrait}" alt="${h.name}" loading="lazy">
-        <div class="hero-label">${h.name}</div>
+        <div class="hero-label">${heroDisplayName(h.id, h.name)}</div>
       </div>
     `).join('');
   });
@@ -1413,18 +1762,19 @@ async function fetchStats() {
   const dotText = document.getElementById('dataStatusText');
 
   btn.disabled = true;
-  status.innerHTML = '<span class="spinner"></span> Fetching data...';
+  status.innerHTML = '<span class="spinner"></span> ' + t('fetching_data');
 
   const cacheKey = `${map}_${tier}_${region}`;
   let allData = {};
   const mapParam = (map === 'all-maps') ? '' : map;
+  const mapLabel = (map === 'all-maps') ? t('all_maps') : map;
 
   try {
     // First try fetching All roles at once
     const blizzUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=All&rq=1&tier=${tier}`;
     const fetchUrl = proxy + encodeURIComponent(blizzUrl);
 
-    status.innerHTML = '<span class="spinner"></span> Fetching all heroes...';
+    status.innerHTML = '<span class="spinner"></span> ' + t('fetching_all_heroes');
     const resp = await fetch(fetchUrl);
     let htmlStr = await getHtmlFromProxyResponse(resp);
     allData = parseBlizzardHtml(htmlStr);
@@ -1434,7 +1784,7 @@ async function fetchStats() {
       const roles = ['Tank', 'Damage', 'Support'];
       for (const role of roles) {
         const roleUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=${role}&rq=1&tier=${tier}`;
-        status.innerHTML = `<span class="spinner"></span> Fetching ${role}...`;
+        status.innerHTML = `<span class="spinner"></span> ${t('fetching_role', {role})}`;
         const roleResp = await fetch(proxy + encodeURIComponent(roleUrl));
         const roleHtml = await getHtmlFromProxyResponse(roleResp);
         Object.assign(allData, parseBlizzardHtml(roleHtml));
@@ -1443,13 +1793,13 @@ async function fetchStats() {
 
     const count = Object.keys(allData).length;
     statsCache[cacheKey] = allData;
-    status.textContent = `Loaded ${count} heroes for ${tier} / ${map === 'all-maps' ? 'All Maps' : map}`;
+    status.textContent = t('loaded_heroes', {count, tier, map: mapLabel});
     dot.className = 'status-dot' + (count > 0 ? ' ok' : '');
-    dotText.textContent = count > 0 ? `Data: ${tier} / ${map === 'all-maps' ? 'All Maps' : map}` : 'No data parsed';
+    dotText.textContent = count > 0 ? t('data_label', {tier, map: mapLabel}) : t('no_data_parsed');
   } catch (err) {
-    status.textContent = 'Fetch failed: ' + err.message + ' (try different proxy or Manual Import)';
+    status.textContent = t('fetch_failed', {msg: err.message});
     dot.className = 'status-dot';
-    dotText.textContent = 'Fetch failed';
+    dotText.textContent = t('fetch_failed_short');
     console.error(err);
   }
   btn.disabled = false;
@@ -1513,14 +1863,14 @@ function parseManualHtml() {
   const htmlStr = document.getElementById('manualHtmlTextarea').value;
   const status = document.getElementById('manualParseStatus');
   if (!htmlStr.trim()) {
-    status.textContent = 'Paste HTML source code first.';
+    status.textContent = t('paste_html_first');
     return;
   }
 
   const parsed = parseBlizzardHtml(htmlStr);
   const count = Object.keys(parsed).length;
   if (count === 0) {
-    status.textContent = 'No hero data found. Make sure you pasted the full page source.';
+    status.textContent = t('no_hero_data');
     return;
   }
 
@@ -1528,10 +1878,11 @@ function parseManualHtml() {
   const region = document.getElementById('regionSelect').value;
   const cacheKey = `${selectedMap}_${tier}_${region}`;
   statsCache[cacheKey] = { ...(statsCache[cacheKey] || {}), ...parsed };
+  const mapLabel = selectedMap === 'all-maps' ? t('all_maps') : selectedMap;
 
-  status.textContent = `Parsed ${count} heroes successfully!`;
+  status.textContent = t('parsed_heroes', {count});
   document.getElementById('dataStatusDot').className = 'status-dot ok';
-  document.getElementById('dataStatusText').textContent = `Data: ${tier} / ${selectedMap === 'all-maps' ? 'All Maps' : selectedMap} (manual)`;
+  document.getElementById('dataStatusText').textContent = t('data_manual', {tier, map: mapLabel});
 }
 
 // ======================================================
@@ -1540,7 +1891,7 @@ function parseManualHtml() {
 function calculate(manual) {
   const allEnemies = [...selectedEnemies.TANK, ...selectedEnemies.DAMAGE, ...selectedEnemies.SUPPORT];
   if (allEnemies.length === 0) {
-    if (manual) alert('Please select at least one enemy hero.');
+    if (manual) alert(t('select_enemy_first'));
     return;
   }
 
@@ -1591,15 +1942,15 @@ function calculate(manual) {
 
   // Build rankings for each position
   const positions = [
-    { key: 'tank', label: 'Tank', cssClass: 'tank',
+    { key: 'tank', label: t('pos_tank'), cssClass: 'tank',
       candidates: HEROES.filter(h => h.role === 'TANK') },
-    { key: 'hitscan', label: 'Hitscan DPS', cssClass: 'hitscan',
+    { key: 'hitscan', label: t('pos_hitscan'), cssClass: 'hitscan',
       candidates: HEROES.filter(h => h.role === 'DAMAGE' && dpsCategories[h.id] && dpsCategories[h.id].hitscan) },
-    { key: 'dive', label: 'Dive DPS', cssClass: 'dive',
+    { key: 'dive', label: t('pos_dive'), cssClass: 'dive',
       candidates: HEROES.filter(h => h.role === 'DAMAGE' && dpsCategories[h.id] && dpsCategories[h.id].dive) },
-    { key: 'flex', label: 'Flex Support', cssClass: 'flex-supp',
+    { key: 'flex', label: t('pos_flex'), cssClass: 'flex-supp',
       candidates: HEROES.filter(h => h.role === 'SUPPORT' && suppCategories[h.id] && suppCategories[h.id].flex) },
-    { key: 'main', label: 'Main Support', cssClass: 'main-supp',
+    { key: 'main', label: t('pos_main'), cssClass: 'main-supp',
       candidates: HEROES.filter(h => h.role === 'SUPPORT' && suppCategories[h.id] && suppCategories[h.id].main) },
   ];
 
@@ -1626,7 +1977,7 @@ function calculate(manual) {
       <div class="result-heroes">`;
 
     if (scored.length === 0) {
-      html += `<div class="no-results">No heroes in this category. Configure in Settings.</div>`;
+      html += `<div class="no-results">${t('no_heroes_in_cat')}</div>`;
     } else {
       scored.forEach((item, i) => {
         const wr = item.stats ? item.stats.winrate + '%' : 'N/A';
@@ -1634,13 +1985,13 @@ function calculate(manual) {
         // Color: 0 = red(hsl 0), max = green(hsl 120)
         const ratio = item.score / globalMax;
         const hue = Math.round(120 * ratio);
-        const cardBg = `hsla(${hue}, 70%, 30%, 0.35)`;
-        html += `<div class="result-hero-card" style="background:${cardBg};" data-tooltip="${item.hero.name}" onclick="showFormulaBreakdown('${item.hero.id}')">
+        const cardBg = `hsl(${hue}, 65%, 32%)`;
+        html += `<div class="result-hero-card" style="background:${cardBg};" data-tooltip="${heroDisplayName(item.hero.id, item.hero.name)}" onclick="showFormulaBreakdown('${item.hero.id}')">
           <div class="rank-badge">#${i + 1}</div>
           <img src="${item.hero.portrait}" alt="${item.hero.name}" loading="lazy">
-          <div class="hero-name-small">${item.hero.name}</div>
-          <div class="score-label">${item.score.toFixed(1)} pts</div>
-          <div class="pick-label">WR ${wr} | PR ${pr}</div>
+          <div class="hero-name-small">${heroDisplayName(item.hero.id, item.hero.name)}</div>
+          <div class="score-label">${item.score.toFixed(1)} ${t('unit_pts')}</div>
+          <div class="pick-label">${t('label_wr')} ${wr} | ${t('label_pr')} ${pr}</div>
         </div>`;
       });
     }
@@ -1718,55 +2069,55 @@ function showFormulaBreakdown(heroId) {
   html += `<div class="formula-header">
     <img src="${hero.portrait}" alt="${hero.name}">
     <div>
-      <div class="fh-name">${hero.name}</div>
-      <div class="fh-score">Final Score: ${finalScore.toFixed(2)} pts</div>
+      <div class="fh-name">${heroDisplayName(hero.id, hero.name)}</div>
+      <div class="fh-score">${t('final_score', {score: finalScore.toFixed(2)})}</div>
     </div>
   </div>`;
 
   html += `<div class="formula-flow">`;
 
   // Base
-  html += `<div class="formula-row-label">Base Score</div>`;
+  html += `<div class="formula-row-label">${t('formula_base')}</div>`;
   html += `<span class="f-base">Base = ${baseScoreVal}</span>`;
 
   // Bonuses
   if (bonuses.length > 0) {
-    html += `<div class="formula-row-label">Counter Bonuses (I counter them)</div>`;
+    html += `<div class="formula-row-label">${t('formula_bonuses')}</div>`;
     bonuses.forEach((b, i) => {
       if (i > 0) html += `<span class="f-op">+</span>`;
       const levelTag = b.level === 2 ? 'HC' : 'C';
       html += `<span class="f-bonus">
-        <img src="${b.enemy.portrait}" title="${b.enemy.name}">
+        <img src="${b.enemy.portrait}" title="${heroDisplayName(b.enemy.id, b.enemy.name)}">
         <span class="fb-val">+${b.val.toFixed(2)}</span>
         <span class="fb-detail">${levelTag} ${b.cv}&times;${b.w}w</span>
       </span>`;
     });
     html += `<span class="f-op">=</span><span class="f-subtotal">+${bonusTotal.toFixed(2)}</span>`;
   } else {
-    html += `<div class="formula-row-label">Counter Bonuses</div>`;
-    html += `<span class="f-subtotal" style="opacity:0.5">No counters (+0)</span>`;
+    html += `<div class="formula-row-label">${t('formula_bonuses_short')}</div>`;
+    html += `<span class="f-subtotal" style="opacity:0.5">${t('formula_no_counters')}</span>`;
   }
 
   // Penalties
   if (penalties.length > 0) {
-    html += `<div class="formula-row-label">Enemy Counters Me (penalty &times;${pf})</div>`;
+    html += `<div class="formula-row-label">${t('formula_penalties', {pf})}</div>`;
     penalties.forEach((p, i) => {
       if (i > 0) html += `<span class="f-op">+</span>`;
       const levelTag = p.level === 2 ? 'HC' : 'C';
       html += `<span class="f-penalty">
-        <img src="${p.enemy.portrait}" title="${p.enemy.name}">
+        <img src="${p.enemy.portrait}" title="${heroDisplayName(p.enemy.id, p.enemy.name)}">
         <span class="fp-val">&minus;${p.val.toFixed(2)}</span>
         <span class="fp-detail">${levelTag} ${p.cv}&times;${p.w}w&times;${pf}</span>
       </span>`;
     });
     html += `<span class="f-op">=</span><span class="f-subtotal" style="color:#e74c3c;">&minus;${penaltyTotal.toFixed(2)}</span>`;
   } else {
-    html += `<div class="formula-row-label">Enemy Counters Me</div>`;
-    html += `<span class="f-subtotal" style="opacity:0.5">No threats (&minus;0)</span>`;
+    html += `<div class="formula-row-label">${t('formula_penalties_short')}</div>`;
+    html += `<span class="f-subtotal" style="opacity:0.5">${t('formula_no_threats')}</span>`;
   }
 
   // Subtotal
-  html += `<div class="formula-row-label">Subtotal</div>`;
+  html += `<div class="formula-row-label">${t('formula_subtotal')}</div>`;
   html += `<span class="f-base">${baseScoreVal}</span>`;
   if (bonusTotal > 0) html += `<span class="f-op">+</span><span class="f-subtotal" style="color:#2ecc71;">+${bonusTotal.toFixed(2)}</span>`;
   if (penaltyTotal > 0) html += `<span class="f-op">&minus;</span><span class="f-subtotal" style="color:#e74c3c;">${penaltyTotal.toFixed(2)}</span>`;
@@ -1779,16 +2130,16 @@ function showFormulaBreakdown(heroId) {
   }
 
   // Winrate
-  html += `<div class="formula-row-label">Winrate Multiplier</div>`;
+  html += `<div class="formula-row-label">${t('formula_wr')}</div>`;
   html += `<span class="f-subtotal">${flooredScore.toFixed(2)}</span>`;
   html += `<span class="f-op">&times;</span>`;
   if (wr) {
-    html += `<span class="f-wr">WR ${wr}% / 50 = ${(wr / 50).toFixed(3)}</span>`;
+    html += `<span class="f-wr">${t('label_wr')} ${wr}% / 50 = ${(wr / 50).toFixed(3)}</span>`;
   } else {
-    html += `<span class="f-wr" style="opacity:0.5">No WR data (&times;1)</span>`;
+    html += `<span class="f-wr" style="opacity:0.5">${t('formula_no_wr')}</span>`;
   }
   html += `<span class="f-op">=</span>`;
-  html += `<span class="f-final">${finalScore.toFixed(2)} pts</span>`;
+  html += `<span class="f-final">${finalScore.toFixed(2)} ${t('unit_pts')}</span>`;
 
   html += `</div>`;
 
@@ -1819,16 +2170,16 @@ function renderDpsCategories() {
     let label = '';
     if (cat.hitscan && cat.dive) {
       classes += ' active-both-dps';
-      label = '<span class="cat-label" style="color:#ff6b6b;">BOTH</span>';
+      label = `<span class="cat-label" style="color:#ff6b6b;">${t('cat_both')}</span>`;
     } else if (cat.hitscan) {
       classes += ' active-hitscan';
-      label = '<span class="cat-label" style="color:var(--dps-color);">HIT</span>';
+      label = `<span class="cat-label" style="color:var(--dps-color);">${t('cat_hit')}</span>`;
     } else if (cat.dive) {
       classes += ' active-dive';
-      label = '<span class="cat-label" style="color:#ff9800;">DIVE</span>';
+      label = `<span class="cat-label" style="color:#ff9800;">${t('cat_dive')}</span>`;
     }
     return `<div class="${classes}" id="dps-cat-${h.id}" onclick="cycleDpsCat('${h.id}')">
-      <img src="${h.portrait}" alt="${h.name}"><span>${h.name}</span>${label}
+      <img src="${h.portrait}" alt="${h.name}"><span>${heroDisplayName(h.id, h.name)}</span>${label}
     </div>`;
   }).join('');
 }
@@ -1871,16 +2222,16 @@ function renderSuppCategories() {
     let label = '';
     if (cat.flex && cat.main) {
       classes += ' active-both-supp';
-      label = '<span class="cat-label" style="color:#66ffcc;">BOTH</span>';
+      label = `<span class="cat-label" style="color:#66ffcc;">${t('cat_both')}</span>`;
     } else if (cat.flex) {
       classes += ' active-flex';
-      label = '<span class="cat-label" style="color:var(--support-color);">FLEX</span>';
+      label = `<span class="cat-label" style="color:var(--support-color);">${t('cat_flex')}</span>`;
     } else if (cat.main) {
       classes += ' active-main';
-      label = '<span class="cat-label" style="color:#4dd0e1;">MAIN</span>';
+      label = `<span class="cat-label" style="color:#4dd0e1;">${t('cat_main')}</span>`;
     }
     return `<div class="${classes}" id="supp-cat-${h.id}" onclick="cycleSuppCat('${h.id}')">
-      <img src="${h.portrait}" alt="${h.name}"><span>${h.name}</span>${label}
+      <img src="${h.portrait}" alt="${h.name}"><span>${heroDisplayName(h.id, h.name)}</span>${label}
     </div>`;
   }).join('');
 }
@@ -1925,7 +2276,7 @@ function renderCounterRoleGroup(sourceId, counters, role, label, labelClass) {
       const level = counters[target.id] || 0;
       const cls = level === 1 ? 'counter-normal' : level === 2 ? 'counter-hard' : '';
       const badge = level === 1 ? 'C' : level === 2 ? 'HC' : '';
-      return `<div class="counter-target ${cls}" data-tooltip="${target.name}"
+      return `<div class="counter-target ${cls}" data-tooltip="${heroDisplayName(target.id, target.name)}"
                    onclick="event.stopPropagation(); cycleCounter('${sourceId}','${target.id}')">
         <img src="${target.portrait}" alt="${target.name}" loading="lazy">
         <span class="counter-badge">${badge}</span>
@@ -1945,8 +2296,8 @@ function renderCounterMatrix() {
     return `<div class="counter-hero-section" data-role="${source.role}">
       <div class="counter-hero-header" onclick="toggleCounterSection('${source.id}', this)">
         <img src="${source.portrait}" alt="${source.name}">
-        <span class="name">${source.name}</span>
-        <span class="counter-count">${counterCount > 0 ? counterCount + ' counters' : ''}</span>
+        <span class="name">${heroDisplayName(source.id, source.name)}</span>
+        <span class="counter-count">${counterCount > 0 ? t('counters_label', {count: counterCount}) : ''}</span>
         <span class="toggle-arrow ${isOpen ? 'open' : ''}">▼</span>
       </div>
       <div class="counter-targets ${isOpen ? 'open' : ''}" id="ct-${source.id}">
@@ -2020,7 +2371,7 @@ function cycleCounter(sourceId, targetId) {
   const countLabel = section.querySelector('.counter-count');
   const counters = counterData[sourceId] || {};
   const counterCount = Object.values(counters).filter(v => v > 0).length;
-  countLabel.textContent = counterCount > 0 ? counterCount + ' counters' : '';
+  countLabel.textContent = counterCount > 0 ? t('counters_label', {count: counterCount}) : '';
 }
 
 function filterCounterRole(role, btn) {
@@ -2089,37 +2440,37 @@ function exportSettings() {
 function importSettings() {
   try {
     const text = document.getElementById('ioTextarea').value.trim();
-    if (!text) { alert('Paste JSON data first.'); return; }
+    if (!text) { alert(t('paste_json_first')); return; }
     const data = JSON.parse(text);
     applySettings(data);
-    alert('Settings imported successfully!');
+    alert(t('settings_imported'));
   } catch (e) {
-    alert('Import failed: ' + e.message);
+    alert(t('import_failed', {msg: e.message}));
   }
 }
 
 function saveToLocal() {
   try {
     localStorage.setItem('ow2_counter_settings', JSON.stringify(getAllSettings()));
-    alert('Saved to browser storage.');
+    alert(t('saved_to_browser'));
   } catch(e) {
-    alert('Save failed: ' + e.message);
+    alert(t('save_failed', {msg: e.message}));
   }
 }
 
 function loadFromLocal() {
   try {
     const raw = localStorage.getItem('ow2_counter_settings');
-    if (!raw) { alert('No saved data found.'); return; }
+    if (!raw) { alert(t('no_saved_data')); return; }
     applySettings(JSON.parse(raw));
-    alert('Loaded from browser storage.');
+    alert(t('loaded_from_browser'));
   } catch(e) {
-    alert('Load failed: ' + e.message);
+    alert(t('load_failed', {msg: e.message}));
   }
 }
 
 function resetAllSettings() {
-  if (!confirm('Reset ALL settings to defaults? This cannot be undone.')) return;
+  if (!confirm(t('reset_confirm'))) return;
   // Reset counter data
   counterData = {};
   HEROES.forEach(h => counterData[h.id] = {});
@@ -2170,13 +2521,24 @@ function resetAllSettings() {
   renderDpsCategories();
   renderSuppCategories();
   renderCounterMatrix();
-  alert('All settings reset to defaults.');
+  alert(t('all_reset'));
 }
 
 // ======================================================
 // INIT
 // ======================================================
 function init() {
+  // Restore language preference
+  try {
+    const savedLang = localStorage.getItem('ow2_lang');
+    if (savedLang && I18N[savedLang]) {
+      currentLang = savedLang;
+      document.getElementById('langSelect').value = savedLang;
+    }
+  } catch(e) {}
+
+  applyI18nToDOM();
+
   renderMapGrid();
   renderEnemyGrids();
   renderDpsCategories();
@@ -2191,12 +2553,12 @@ function init() {
       if (saved._v === SETTINGS_VERSION) {
         applySettings(saved);
         document.getElementById('dataStatusDot').className = 'status-dot ok';
-        document.getElementById('dataStatusText').textContent = 'Settings loaded from browser';
+        document.getElementById('dataStatusText').textContent = t('settings_loaded');
       } else {
         // Outdated version, clear and save new defaults
         localStorage.setItem('ow2_counter_settings', JSON.stringify(getAllSettings()));
         document.getElementById('dataStatusDot').className = 'status-dot ok';
-        document.getElementById('dataStatusText').textContent = 'Defaults updated (v' + SETTINGS_VERSION + ')';
+        document.getElementById('dataStatusText').textContent = t('defaults_updated', {ver: SETTINGS_VERSION});
       }
     }
   } catch(e) { /* ignore */ }
