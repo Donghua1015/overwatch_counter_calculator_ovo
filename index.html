@@ -922,7 +922,7 @@ select.ow-select:focus { border-color: var(--accent-orange); }
     <div class="section-title" data-i18n="manual_source_import">Manual Source Code Import</div>
     <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;" data-i18n-html="manual_import_help">
       Open the Blizzard stats page in your browser, right-click &gt; View Page Source, copy all, and paste below.<br>
-      URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&amp;map=busan&amp;region=Americas&amp;role=All&amp;rq=1&amp;tier=Platinum</code>
+      URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&amp;map=busan&amp;region=Americas&amp;role=All&amp;rq=2&amp;tier=Platinum</code>
     </div>
     <textarea id="manualHtmlTextarea" style="font-family:monospace;font-size:11px;width:100%;height:140px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;padding:8px;resize:vertical;outline:none;" data-i18n-placeholder="manual_paste_placeholder" placeholder="Paste the full HTML source code here..."></textarea>
     <div style="margin-top:8px;display:flex;gap:8px;">
@@ -1104,7 +1104,7 @@ const I18N = {
     clear_selection: 'Clear Selection',
     manual_import: 'Manual Import',
     manual_source_import: 'Manual Source Code Import',
-    manual_import_help: 'Open the Blizzard stats page in your browser, right-click > View Page Source, copy all, and paste below.<br>URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=1&tier=Platinum</code>',
+    manual_import_help: 'Open the Blizzard stats page in your browser, right-click > View Page Source, copy all, and paste below.<br>URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=2&tier=Platinum</code>',
     manual_paste_placeholder: 'Paste the full HTML source code here...',
     parse_html: 'Parse HTML',
     score_breakdown: 'Score Breakdown',
@@ -1233,7 +1233,7 @@ const I18N = {
     clear_selection: '清除选择',
     manual_import: '手动导入',
     manual_source_import: '手动源码导入',
-    manual_import_help: '在浏览器中打开暴雪数据页面，右键 > 查看页面源代码，全选复制后粘贴到下方。<br>URL 示例：<code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=1&tier=Platinum</code>',
+    manual_import_help: '在浏览器中打开暴雪数据页面，右键 > 查看页面源代码，全选复制后粘贴到下方。<br>URL 示例：<code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&map=busan&region=Americas&role=All&rq=2&tier=Platinum</code>',
     manual_paste_placeholder: '在此粘贴完整的 HTML 源代码...',
     parse_html: '解析 HTML',
     score_breakdown: '分数拆解',
@@ -1771,7 +1771,7 @@ async function fetchStats() {
 
   try {
     // First try fetching All roles at once
-    const blizzUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=All&rq=1&tier=${tier}`;
+    const blizzUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=All&rq=2&tier=${tier}`;
     const fetchUrl = proxy + encodeURIComponent(blizzUrl);
 
     status.innerHTML = '<span class="spinner"></span> ' + t('fetching_all_heroes');
@@ -1783,7 +1783,7 @@ async function fetchStats() {
     if (Object.keys(allData).length === 0) {
       const roles = ['Tank', 'Damage', 'Support'];
       for (const role of roles) {
-        const roleUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=${role}&rq=1&tier=${tier}`;
+        const roleUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=${role}&rq=2&tier=${tier}`;
         status.innerHTML = `<span class="spinner"></span> ${t('fetching_role', {role})}`;
         const roleResp = await fetch(proxy + encodeURIComponent(roleUrl));
         const roleHtml = await getHtmlFromProxyResponse(roleResp);
