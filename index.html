@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OW2 Counter Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2332;
+  --bg-card-hover: #243044;
+  --accent-orange: #f99e1a;
+  --accent-blue: #3b82f6;
+  --accent-red: #ef4444;
+  --accent-green: #22c55e;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: #2a3a4e;
+  --counter-normal: #eab308;
+  --counter-hard: #ef4444;
+  --tank-color: #4a90d9;
+  --dps-color: #e74c3c;
+  --support-color: #2ecc71;
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.4;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0f1923 0%, #1a2744 100%);
+  border-bottom: 2px solid var(--accent-orange);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header h1 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--accent-orange);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tab-bar {
+  display: flex;
+  gap: 4px;
+}
+.tab-btn {
+  font-family: var(--font-display);
+  font-size: 13px;
+  padding: 8px 24px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all .2s;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+.tab-btn.active {
+  background: var(--accent-orange);
+  color: #000;
+  border-color: var(--accent-orange);
+}
+.tab-btn:hover:not(.active) {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+.status-bar {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent-red);
+}
+.status-dot.ok { background: var(--accent-green); }
+
+/* Page containers */
+.page { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* Section titles */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent-orange);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Calculator Page */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+.select-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* Rank & Map row */
+.config-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.config-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  flex: 1;
+  min-width: 200px;
+}
+select.ow-select {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 12px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  cursor: pointer;
+  outline: none;
+}
+select.ow-select:focus { border-color: var(--accent-orange); }
+
+/* Enemy selection */
+.enemy-columns {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 16px;
+}
+.role-column {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+.role-header {
+  font-family: var(--font-display);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 6px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.role-header.tank { background: rgba(74,144,217,0.2); color: var(--tank-color); }
+.role-header.damage { background: rgba(231,76,60,0.2); color: var(--dps-color); }
+.role-header.support { background: rgba(46,204,113,0.2); color: var(--support-color); }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 6px;
+}
+.hero-icon {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  transition: all .15s;
+  background: var(--bg-card);
+}
+.hero-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.hero-icon:hover { border-color: var(--text-secondary); transform: scale(1.05); }
+.hero-icon.selected {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 10px rgba(249,158,26,0.4);
+}
+.hero-icon.selected::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(249,158,26,0.15);
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-icon.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.hero-icon .hero-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.85);
+  font-size: 9px;
+  text-align: center;
+  padding: 2px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity .15s;
+  pointer-events: none;
+}
+.hero-icon:hover .hero-label {
+  opacity: 1;
+}
+
+/* Fetch button */
+.action-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  font-family: var(--font-display);
+  font-size: 13px;
+  padding: 10px 28px;
+  background: var(--accent-orange);
+  color: #000;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: all .2s;
+}
+.btn-primary:hover { background: #ffb347; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 18px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-secondary:hover { background: var(--bg-card-hover); border-color: var(--accent-blue); }
+.btn-danger {
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 18px;
+  background: rgba(239,68,68,0.1);
+  color: var(--accent-red);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+.fetch-status {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Formula Breakdown */
+.formula-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.formula-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+.formula-header img {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  border: 2px solid var(--accent-orange);
+}
+.formula-header .fh-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--accent-orange);
+}
+.formula-header .fh-score {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.formula-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.formula-flow .f-op {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 16px;
+  min-width: 16px;
+  text-align: center;
+}
+.formula-flow .f-base {
+  background: rgba(100,100,255,0.15);
+  color: #8888ff;
+  border: 1px solid rgba(100,100,255,0.3);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-weight: 600;
+}
+.formula-flow .f-bonus {
+  background: rgba(46,204,113,0.12);
+  border: 1px solid rgba(46,204,113,0.3);
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.formula-flow .f-bonus img {
+  width: 24px; height: 24px; border-radius: 3px;
+}
+.formula-flow .f-bonus .fb-val { color: #2ecc71; font-weight: 600; }
+.formula-flow .f-bonus .fb-detail { color: var(--text-muted); font-size: 11px; }
+.formula-flow .f-penalty {
+  background: rgba(231,76,60,0.12);
+  border: 1px solid rgba(231,76,60,0.3);
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.formula-flow .f-penalty img {
+  width: 24px; height: 24px; border-radius: 3px;
+}
+.formula-flow .f-penalty .fp-val { color: #e74c3c; font-weight: 600; }
+.formula-flow .f-penalty .fp-detail { color: var(--text-muted); font-size: 11px; }
+.formula-flow .f-subtotal {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.formula-flow .f-wr {
+  background: rgba(249,158,26,0.12);
+  border: 1px solid rgba(249,158,26,0.3);
+  border-radius: 6px;
+  padding: 3px 10px;
+  color: var(--accent-orange);
+  font-weight: 600;
+}
+.formula-flow .f-final {
+  background: linear-gradient(135deg, rgba(249,158,26,0.2), rgba(59,130,246,0.2));
+  border: 2px solid var(--accent-orange);
+  border-radius: 8px;
+  padding: 4px 14px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+.formula-row-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  width: 100%;
+  font-family: var(--font-display);
+}
+
+/* Results */
+.results-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.result-row {
+  margin-bottom: 16px;
+}
+.result-row:last-child { margin-bottom: 0; }
+.result-position {
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.result-position.tank { background: rgba(74,144,217,0.2); color: var(--tank-color); }
+.result-position.hitscan { background: rgba(231,76,60,0.2); color: var(--dps-color); }
+.result-position.dive { background: rgba(231,76,60,0.2); color: #ff9800; }
+.result-position.flex-supp { background: rgba(46,204,113,0.2); color: var(--support-color); }
+.result-position.main-supp { background: rgba(46,204,113,0.2); color: #4dd0e1; }
+
+.result-heroes {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.result-hero-card {
+  flex-shrink: 0;
+  width: 72px;
+  text-align: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px;
+  transition: all .2s;
+  cursor: pointer;
+}
+.result-hero-card:hover { border-color: var(--accent-orange); }
+.result-hero-card.formula-active { border-color: var(--accent-orange); box-shadow: 0 0 8px rgba(249,158,26,0.4); }
+.result-hero-card .rank-badge {
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--accent-orange);
+  margin-bottom: 2px;
+}
+.result-hero-card img {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.result-hero-card .score-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.result-hero-card .pick-label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.result-hero-card .hero-name-small {
+  font-size: 10px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Settings Page */
+.settings-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.setting-item label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.setting-item input[type="number"] {
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 6px 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+}
+.setting-item input[type="number"]:focus { border-color: var(--accent-orange); }
+
+/* Category assignment */
+.category-section {
+  margin-top: 12px;
+}
+.category-hero-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.category-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .15s;
+  user-select: none;
+}
+.category-tag img {
+  width: 24px; height: 24px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+.category-tag:hover { border-color: var(--text-secondary); }
+.category-tag.active-hitscan { border-color: var(--dps-color); background: rgba(231,76,60,0.15); }
+.category-tag.active-dive { border-color: #ff9800; background: rgba(255,152,0,0.15); }
+.category-tag.active-both-dps { border-color: #ff6b6b; background: linear-gradient(135deg, rgba(231,76,60,0.15), rgba(255,152,0,0.15)); box-shadow: 0 0 6px rgba(255,107,107,0.3); }
+.category-tag.active-flex { border-color: var(--support-color); background: rgba(46,204,113,0.15); }
+.category-tag.active-main { border-color: #4dd0e1; background: rgba(77,208,225,0.15); }
+.category-tag.active-both-supp { border-color: #66ffcc; background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(77,208,225,0.15)); box-shadow: 0 0 6px rgba(102,255,204,0.3); }
+.category-tag .cat-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* Counter matrix */
+.counter-matrix {
+  margin-top: 12px;
+}
+.counter-hero-section {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+.counter-hero-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.counter-hero-header img {
+  width: 40px; height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.counter-hero-header .name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.counter-hero-header .toggle-arrow {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 18px;
+  transition: transform .2s;
+}
+.counter-hero-header .toggle-arrow.open { transform: rotate(180deg); }
+.counter-hero-header .counter-count {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.counter-targets {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 50px;
+}
+.counter-targets.open { display: flex; }
+.counter-role-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.counter-role-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 32px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-right: 4px;
+}
+.counter-role-label.tank-label { color: var(--tank-color); }
+.counter-role-label.dps-label { color: var(--dps-color); }
+.counter-role-label.supp-label { color: var(--support-color); }
+.counter-target {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  transition: all .15s;
+  position: relative;
+}
+.counter-target img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.counter-target:hover { transform: scale(1.1); }
+.counter-target.counter-normal {
+  border-color: var(--counter-normal);
+  box-shadow: 0 0 6px rgba(234,179,8,0.4);
+}
+.counter-target.counter-hard {
+  border-color: var(--counter-hard);
+  box-shadow: 0 0 6px rgba(239,68,68,0.5);
+}
+.counter-target .counter-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 3px;
+  border-radius: 0 0 0 3px;
+  display: none;
+}
+.counter-target.counter-normal .counter-badge {
+  display: block;
+  background: var(--counter-normal);
+  color: #000;
+}
+.counter-target.counter-hard .counter-badge {
+  display: block;
+  background: var(--counter-hard);
+  color: #fff;
+}
+
+/* Import/Export */
+.io-section {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.io-section textarea {
+  font-family: monospace;
+  font-size: 12px;
+  width: 100%;
+  height: 120px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px;
+  resize: vertical;
+  outline: none;
+}
+.io-section textarea:focus { border-color: var(--accent-orange); }
+
+/* Proxy config */
+.proxy-input {
+  font-family: monospace;
+  font-size: 13px;
+  padding: 6px 10px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+}
+.proxy-input:focus { border-color: var(--accent-orange); }
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent-orange);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Map grid */
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 6px;
+}
+.map-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all .15s;
+  overflow: hidden;
+}
+.map-card:hover { border-color: var(--text-secondary); background: var(--bg-card-hover); }
+.map-card.selected { border-color: var(--accent-orange); box-shadow: 0 0 10px rgba(249,158,26,0.3); }
+.map-card img {
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  display: block;
+}
+.map-card .map-info {
+  padding: 4px 6px;
+}
+.map-card .map-type {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .enemy-columns { grid-template-columns: 1fr; }
+  .header { flex-wrap: wrap; }
+  .header h1 { font-size: 16px; }
+}
+
+/* Tooltip */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.95);
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  z-index: 50;
+  pointer-events: none;
+  border: 1px solid var(--border-color);
+}
+
+/* No results message */
+.no-results {
+  color: var(--text-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+/* Filter controls for counter matrix */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 4px 12px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.filter-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+.filter-btn:hover:not(.active) { border-color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>OW2 Counter Calc</h1>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('calculator')">Calculator</button>
+    <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
+  </div>
+  <div class="status-bar">
+    <div class="status-dot" id="dataStatusDot"></div>
+    <span id="dataStatusText">No data loaded</span>
+  </div>
+</header>
+
+<!-- ==================== PAGE 1: CALCULATOR ==================== -->
+<div class="page active" id="page-calculator">
+  <!-- Config: Rank + Map + Proxy -->
+  <div class="config-row">
+    <div class="config-item" style="flex:0.6;">
+      <div class="section-title">Rank</div>
+      <select class="ow-select" id="rankSelect" onchange="onConfigChange()">
+        <option value="All">All Tiers</option>
+        <option value="Bronze">Bronze</option>
+        <option value="Silver">Silver</option>
+        <option value="Gold">Gold</option>
+        <option value="Platinum" selected>Platinum</option>
+        <option value="Diamond">Diamond</option>
+        <option value="Master">Master</option>
+        <option value="Grandmaster">Grandmaster &amp; Champion</option>
+      </select>
+    </div>
+    <div class="config-item" style="flex:0.6;">
+      <div class="section-title">Region</div>
+      <select class="ow-select" id="regionSelect" onchange="onConfigChange()">
+        <option value="Americas" selected>Americas</option>
+        <option value="Europe">Europe</option>
+        <option value="Asia">Asia</option>
+      </select>
+    </div>
+    <div class="config-item" style="flex:2;">
+      <div class="section-title">CORS Proxy</div>
+      <div style="display:flex;gap:8px;">
+        <select class="ow-select" id="proxySelect" style="flex:1;" onchange="onProxySelect()">
+          <option value="https://corsproxy.io/?url=">corsproxy.io (free)</option>
+          <option value="https://api.allorigins.win/get?url=">allorigins.win (free)</option>
+          <option value="https://api.codetabs.com/v1/proxy?quest=">codetabs.com (free)</option>
+          <option value="custom">Custom URL...</option>
+        </select>
+        <input class="proxy-input" id="proxyInput" value="https://corsproxy.io/?url=" placeholder="Proxy URL prefix..." style="flex:1.5;">
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
+        If Fetch fails, try switching to a different proxy. Free proxies may be unstable.
+      </div>
+    </div>
+  </div>
+
+  <!-- Map selection -->
+  <div class="select-section" style="margin-bottom:16px;">
+    <div class="section-title">Select Map</div>
+    <div class="map-grid" id="mapGrid"></div>
+  </div>
+
+  <!-- Enemy selection -->
+  <div class="section-title">Select Enemy Team (1 Tank + 2 DPS + 2 Support)</div>
+  <div class="enemy-columns" id="enemyColumns">
+    <div class="role-column">
+      <div class="role-header tank">Tank (1)</div>
+      <div class="hero-grid" id="enemy-tank-grid"></div>
+    </div>
+    <div class="role-column">
+      <div class="role-header damage">Damage (2)</div>
+      <div class="hero-grid" id="enemy-damage-grid"></div>
+    </div>
+    <div class="role-column">
+      <div class="role-header support">Support (2)</div>
+      <div class="hero-grid" id="enemy-support-grid"></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="margin-top:16px;">
+    <div class="action-row">
+      <button class="btn-primary" id="fetchBtn" onclick="fetchStats()">Fetch Stats</button>
+      <button class="btn-primary" onclick="calculate(true)" style="background:var(--accent-blue);">Calculate</button>
+      <button class="btn-secondary" onclick="clearEnemySelection()">Clear Selection</button>
+      <button class="btn-secondary" onclick="toggleManualImport()">Manual Import</button>
+      <span class="fetch-status" id="fetchStatus"></span>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">
+      Fetch not working? Switch proxy above, or use Manual Import. Paid options for stability:
+      <a href="https://www.scraperapi.com" style="color:var(--accent-blue);" target="_blank">ScraperAPI</a> |
+      <a href="https://brightdata.com" style="color:var(--accent-blue);" target="_blank">Bright Data</a> |
+      <a href="https://www.scrapingbee.com" style="color:var(--accent-blue);" target="_blank">ScrapingBee</a>
+    </div>
+  </div>
+
+  <!-- Manual HTML Paste Import -->
+  <div class="select-section" id="manualImportSection" style="margin-top:12px;display:none;">
+    <div class="section-title">Manual Source Code Import</div>
+    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">
+      Open the Blizzard stats page in your browser, right-click &gt; View Page Source, copy all, and paste below.<br>
+      URL example: <code style="color:var(--accent-orange);font-size:12px;">https://overwatch.blizzard.com/en-us/rates/?input=PC&amp;map=busan&amp;region=Americas&amp;role=All&amp;rq=1&amp;tier=Platinum</code>
+    </div>
+    <textarea id="manualHtmlTextarea" style="font-family:monospace;font-size:11px;width:100%;height:140px;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-color);border-radius:4px;padding:8px;resize:vertical;outline:none;" placeholder="Paste the full HTML source code here..."></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;">
+      <button class="btn-primary" onclick="parseManualHtml()">Parse HTML</button>
+      <span class="fetch-status" id="manualParseStatus"></span>
+    </div>
+  </div>
+
+  <!-- Formula Breakdown -->
+  <div class="formula-section" id="formulaSection" style="display:none;">
+    <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>Score Breakdown</span>
+      <span style="font-size:12px;cursor:pointer;color:var(--text-muted);opacity:0.7;" onclick="document.getElementById('formulaSection').style.display='none'">CLOSE &times;</span>
+    </div>
+    <div id="formulaContainer"></div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-section" id="resultsSection" style="display:none;">
+    <div class="section-title">Recommendations</div>
+    <div id="resultsContainer"></div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 2: SETTINGS ==================== -->
+<div class="page" id="page-settings">
+
+  <!-- Counter & Role Weight Settings -->
+  <div class="settings-section">
+    <div class="section-title">Multiplier Settings</div>
+    <div class="settings-grid">
+      <div class="setting-item">
+        <label>Hero Base Score</label>
+        <input type="number" id="baseScore" value="10" step="1" min="0">
+      </div>
+      <div class="setting-item">
+        <label>Normal Counter Value</label>
+        <input type="number" id="counterNormal" value="1" step="0.5" min="0">
+      </div>
+      <div class="setting-item">
+        <label>Hard Counter Value</label>
+        <input type="number" id="counterHard" value="1.5" step="0.5" min="0">
+      </div>
+      <div class="setting-item">
+        <label>Penalty Factor</label>
+        <input type="number" id="penaltyFactor" value="1" step="0.05" min="0" max="2">
+      </div>
+      <div class="setting-item">
+        <label>Tank Role Weight</label>
+        <input type="number" id="weightTank" value="2" step="0.5" min="0">
+      </div>
+      <div class="setting-item">
+        <label>DPS Role Weight</label>
+        <input type="number" id="weightDamage" value="1" step="0.5" min="0">
+      </div>
+      <div class="setting-item">
+        <label>Support Role Weight</label>
+        <input type="number" id="weightSupport" value="1" step="0.5" min="0">
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);">
+      Score = max(0, base + Σ(counter_value x role_weight) - Σ(enemy_counter_value x role_weight x penalty)) x winrate/50.<br>
+      Penalty Factor controls how much being countered by enemies reduces score (0 = ignore, 1 = full penalty).
+    </div>
+  </div>
+
+  <!-- DPS Subcategories -->
+  <div class="settings-section">
+    <div class="section-title">DPS Subcategories</div>
+    <div class="category-section">
+      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;">
+        Click to cycle: None → <span style="color:var(--dps-color);">Hitscan</span> →
+        <span style="color:#ff9800;">Dive</span> →
+        <span style="color:#ff6b6b;">Both</span> → None.
+        Heroes marked "Both" appear in both recommendation lists.
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterDpsCat('all', this)">All</button>
+        <button class="filter-btn" onclick="filterDpsCat('hitscan', this)">Hitscan Only</button>
+        <button class="filter-btn" onclick="filterDpsCat('dive', this)">Dive Only</button>
+        <button class="filter-btn" onclick="filterDpsCat('both', this)">Both</button>
+        <button class="filter-btn" onclick="filterDpsCat('unset', this)">Unassigned</button>
+      </div>
+      <div class="category-hero-list" id="dpsCategoryList"></div>
+    </div>
+  </div>
+
+  <!-- Support Subcategories -->
+  <div class="settings-section">
+    <div class="section-title">Support Subcategories</div>
+    <div class="category-section">
+      <div style="margin-bottom:6px;color:var(--text-secondary);font-size:13px;">
+        Click to cycle: None → <span style="color:var(--support-color);">Flex</span> →
+        <span style="color:#4dd0e1;">Main</span> →
+        <span style="color:#66ffcc;">Both</span> → None.
+        Heroes marked "Both" appear in both recommendation lists.
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" onclick="filterSuppCat('all', this)">All</button>
+        <button class="filter-btn" onclick="filterSuppCat('flex', this)">Flex Only</button>
+        <button class="filter-btn" onclick="filterSuppCat('main', this)">Main Only</button>
+        <button class="filter-btn" onclick="filterSuppCat('both', this)">Both</button>
+        <button class="filter-btn" onclick="filterSuppCat('unset', this)">Unassigned</button>
+      </div>
+      <div class="category-hero-list" id="suppCategoryList"></div>
+    </div>
+  </div>
+
+  <!-- Counter Matrix -->
+  <div class="settings-section">
+    <div class="section-title">Counter Relationships</div>
+    <div style="margin-bottom:8px;color:var(--text-secondary);font-size:13px;">
+      For each hero, click target heroes below to set counter relationships.<br>
+      Click once = <span style="color:var(--counter-normal);">Normal Counter (yellow)</span>,
+      twice = <span style="color:var(--counter-hard);">Hard Counter (red)</span>,
+      three times = remove.
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterCounterRole('all', this)">All Heroes</button>
+      <button class="filter-btn" onclick="filterCounterRole('TANK', this)">Tanks</button>
+      <button class="filter-btn" onclick="filterCounterRole('DAMAGE', this)">DPS</button>
+      <button class="filter-btn" onclick="filterCounterRole('SUPPORT', this)">Support</button>
+      <span style="margin-left:auto;font-size:12px;color:var(--text-muted);">
+        <button class="btn-secondary" onclick="expandAllCounters()">Expand All</button>
+        <button class="btn-secondary" onclick="collapseAllCounters()">Collapse All</button>
+      </span>
+    </div>
+    <div class="counter-matrix" id="counterMatrix"></div>
+  </div>
+
+  <!-- Import / Export -->
+  <div class="settings-section">
+    <div class="section-title">Import / Export All Settings</div>
+    <div class="io-section">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button class="btn-primary" onclick="exportSettings()">Export</button>
+        <button class="btn-primary" onclick="importSettings()" style="background:var(--accent-blue);">Import</button>
+        <button class="btn-secondary" onclick="saveToLocal()">Save to Browser</button>
+        <button class="btn-secondary" onclick="loadFromLocal()">Load from Browser</button>
+        <button class="btn-danger" onclick="resetAllSettings()">Reset All</button>
+      </div>
+      <textarea id="ioTextarea" placeholder="Paste JSON here to import, or click Export to generate..."></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======================================================
+// DATA
+// ======================================================
+const HEROES = [
+  {"id":"ana","name":"Ana","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/985b06beae46b7ba3ca87d1512d0fc62ca7f206ceca58ef16fc44d43a1cc84ed.png","color":"48699eff"},
+  {"id":"anran","name":"Anran","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/2cdf460c6080a031258e513713d1d635a8e68799cb5d7e27774be8963e95f6a3.png","color":"e81a05ff"},
+  {"id":"ashe","name":"Ashe","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/4076bbaa2eb52a0bfe612434071e56e7702d5454473dbbea2f9e392a9d997a94.png","color":"3e3c3aff"},
+  {"id":"baptiste","name":"Baptiste","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/d4e6f1ca45d9f88fa89260787397f141a6f007b14e5b26698883b6a17bab9680.png","color":"28a5c3ff"},
+  {"id":"bastion","name":"Bastion","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/4ede795c2a681aaccfa72d0c901cba0cb8a2c292fd6a97b2ba9faed161c2d184.png","color":"5b7351ff"},
+  {"id":"brigitte","name":"Brigitte","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/795fba91376d87d441a7f359ae12a3175dfa95825ccc4414cc6b95b129fc4cb0.png","color":"72332aff"},
+  {"id":"cassidy","name":"Cassidy","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/9240cd64cc8ef58df9acbf55204ab1b5d8578f743fda5931f0dbccbd75ab841b.png","color":"a62927ff"},
+  {"id":"dva","name":"D.Va","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/df5a5532862d9292634fb3dc0e51a4705aa601de65e5e815513ccc663d84de56.png","color":"fc79bdff"},
+  {"id":"domina","name":"Domina","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/1161c112292c56c052c0ae711792fcde06e3251b98bc9709e582dd7585b5dcd6.png","color":"69deefff"},
+  {"id":"doomfist","name":"Doomfist","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ff5c54f43ad253c7faeda9c4ed31d42582ea6b19205d197866f3dd0c0aa14c16.png","color":"661e0fff"},
+  {"id":"echo","name":"Echo","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/d4f2d5b0c2b7e82d61353186c5f23152ccba9d3569b50839aa580dca3e9114ba.png","color":"89c8ffff"},
+  {"id":"emre","name":"Emre","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/c51e2f698138861c0e3b6cfab3c3ca9d67fd709be175e7c397aa6f2649712a30.png","color":"c70c0cff"},
+  {"id":"freja","name":"Freja","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/811963897c352d9f178bec882d94bd0281074feee7c429c5145b6b8ea8ebe862.png","color":"3f93ffff"},
+  {"id":"genji","name":"Genji","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/156b12c20b1aea872c1eeb5bb37a7de1047b2ab30ecefd0663a8925badde1ea8.png","color":"80fb00ff"},
+  {"id":"hanzo","name":"Hanzo","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/78b61c3e806fb26b02b8980fba62189155074fc15bd865b0883268e546030be5.png","color":"b2a865ff"},
+  {"id":"hazard","name":"Hazard","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ca48b96dbae6ea7f58ce8a5e73513c8c62b1685bdbf258020fb78bb21a008b5f.png","color":"985ec0ff"},
+  {"id":"illari","name":"Illari","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ce42d1455e03e79f321345fea84b27a8918b5db8bd7ab9b2ca9e569606ede9e4.png","color":"a58c54ff"},
+  {"id":"jetpack-cat","name":"Jetpack Cat","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/03a184cd0de27091e0099ac22635ad9615a8f6997881a5c25cc5f2444764f729.png","color":"c9cdd1ff"},
+  {"id":"junker-queen","name":"Junker Queen","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/06eeecb359f311f43a8f5121d4f9f3a93c565d70b30e94ef543c05596c9a39dc.png","color":"579fcfff"},
+  {"id":"junkrat","name":"Junkrat","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/7660b9fc6f25f30858fdd8797fe0d52b2306f1e78fef99843f58a274e69af046.png","color":"f7b217ff"},
+  {"id":"juno","name":"Juno","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/c0167d251e57b0aa2b1e16c37d87f0e7c77263db9dd0503d77b5f2589bf3e4a0.png","color":"721fa3ff"},
+  {"id":"kiriko","name":"Kiriko","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/408603fe037e8576078eaac5eab2fb251489ced4003b11f5f522776d43d0b83d.png","color":"d04656ff"},
+  {"id":"lifeweaver","name":"Lifeweaver","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/3376515cebed0904012e67e956f6d1b9c12e03da642845eeaf787b7e4c7b339d.png","color":"e1a5baff"},
+  {"id":"lucio","name":"Lúcio","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/040bb13f5123ab93faad2f95627ba184608aef4b2469a4d3003859c7087df044.png","color":"67c519ff"},
+  {"id":"mauga","name":"Mauga","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/33d39bb439c08975197fc52eff4874716839711b5356c4fdc174f9c24bac1d0e.png","color":"db4216ff"},
+  {"id":"mei","name":"Mei","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/4a55ced3bd597fb08e0fde9dc007f8543ac616ba98ca3db9b0e4d871a8ae17f8.png","color":"469af0ff"},
+  {"id":"mercy","name":"Mercy","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/3bfb8bd8ec827e53d870f1238ab73d8aa1f5dbfbcfaaf7f96ffcd35b5c6102ab.png","color":"faf2adff"},
+  {"id":"mizuki","name":"Mizuki","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/a2c8dd2fdc10e5b5110062e2bd5dc3fc56e692a812f35f0fcea3b580fd01f578.png","color":"9affc7ff"},
+  {"id":"moira","name":"Moira","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/f48f8485056d5d00dad195859188d23e50f7126b8b08b5646f46ef1b42f5e1de.png","color":"804be5ff"},
+  {"id":"orisa","name":"Orisa","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/a73958a28551f5254f3ab3f97c5f5f8d698a95c0b6a515d1a2b1caac169205a6.png","color":"106f04ff"},
+  {"id":"pharah","name":"Pharah","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/60ac2d5de4a6d34644d8872233da402f1436c87f804bb11a21661bb30bf4a51f.png","color":"58bcff"},
+  {"id":"ramattra","name":"Ramattra","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ddef7c9fb8ce4256e8508196b486f81950efe7aaa6cf27fec4668beb4cd15774.png","color":"7d55c7ff"},
+  {"id":"reaper","name":"Reaper","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/dc6ff07ac790c00dc95a40882449617bb6e0e38906b353a630cffe0c815270a9.png","color":"5e001aff"},
+  {"id":"reinhardt","name":"Reinhardt","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/551fbe070c16fdfcc17f7f1de63af22c53e7d2f1340fc2f3172441504527bc4e.png","color":"7c8b8cff"},
+  {"id":"roadhog","name":"Roadhog","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/89ddf07e4b619ed96169042e296a1b8856d102746f35add88284b44a9a5a6a03.png","color":"ae6f1cff"},
+  {"id":"sigma","name":"Sigma","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/a4c032fa466c9a6d9c6974747635d7ef910027f91cd58892af0c899db565f92d.png","color":"7c8b8cff"},
+  {"id":"sojourn","name":"Sojourn","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/82b8c1b8765dcb9a0ba16e343c3516bf324c771ac81e9878473280216e70a889.png","color":"d73e2cff"},
+  {"id":"soldier-76","name":"Soldier: 76","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/c93b5f0a528c40473188f77cc2a267aee7d5b6cf5c9e104105d634b4388674e2.png","color":"445275ff"},
+  {"id":"sombra","name":"Sombra","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/47727b02a16e3bd7b2447d86ae1edf11587bc320b2aecb4f2f16a7ca4ad4e8a0.png","color":"5128a9ff"},
+  {"id":"symmetra","name":"Symmetra","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ebec57e8bd68b3d4383edfeb34f8f52dd0b94a6467d594c2fee722e8a97c32aa.png","color":"76b4c9ff"},
+  {"id":"torbjorn","name":"Torbjörn","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/ce17118cedc29b0d2ac1e059666bed36b9531c85079b0b894bb402d12c917ba9.png","color":"ba4c3fff"},
+  {"id":"tracer","name":"Tracer","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/4504f6f15cb3feaa92ecd38e01dcf751cb5abdac2e0bb52d0555727e53277502.png","color":"de7a00ff"},
+  {"id":"vendetta","name":"Vendetta","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/cf8ffb52b6f315546d5e94e9d6defad5a2c570798776956de23f47536f9529da.png","color":"961a1cff"},
+  {"id":"venture","name":"Venture","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/dcab9123f5f55df22e54d4e797de43c71b917e0149dd059a7fd6136f48464cd0.png","color":"79614eff"},
+  {"id":"widowmaker","name":"Widowmaker","role":"DAMAGE","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/6e4702b45f196aaf51555cf57327322721f45458b17f5f0643ed008a88378259.png","color":"8b3f8fff"},
+  {"id":"winston","name":"Winston","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/46a10db3aa908c590ddc4e7606376a88143d1f1306ecfbea043263040f9529a5.png","color":"8f92aeff"},
+  {"id":"wrecking-ball","name":"Wrecking Ball","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/9ef1d58867136e0b26f928d896000b9dab216118f6e2f59e53f2e975e1e27afa.png","color":"e2790aff"},
+  {"id":"wuyang","name":"Wuyang","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/4959500b495b35c0908be2abda56b53f2601b2c5cc39a1cfde8df1bffd38d66d.png","color":"4c7fefff"},
+  {"id":"zarya","name":"Zarya","role":"TANK","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/9b6f63cc66ddf9d5e0862173c733cc0d2e574c5c89357798d91b93b2f95a7080.png","color":"f65ea6ff"},
+  {"id":"zenyatta","name":"Zenyatta","role":"SUPPORT","portrait":"https://d15f34w2p8l1cc.cloudfront.net/overwatch/7d1546b1541a8afc39353f9337a408d6275a141b0432b7e560ef61579996b0fc.png","color":"fcee5aff"}
+];
+
+const HERO_MAP = {};
+HEROES.forEach(h => HERO_MAP[h.id] = h);
+
+const MAPS = {
+  "Control": [
+    {id:"busan",name:"Busan",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/0/09/Overwatch_Busan.jpg/revision/latest/scale-to-width-down/200?cb=20190412043201"},
+    {id:"ilios",name:"Ilios",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/4/45/Ilios.jpg/revision/latest/scale-to-width-down/200?cb=20180520062425"},
+    {id:"lijiang-tower",name:"Lijiang Tower",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/9/9b/Lijiang_Tower_loading_screen.jpg/revision/latest/scale-to-width-down/200?cb=20180520062020"},
+    {id:"nepal",name:"Nepal",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/f/f3/Nepal_loading_screen.jpg/revision/latest/scale-to-width-down/200?cb=20190412043102"},
+    {id:"oasis",name:"Oasis",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/f/fc/Oasis.jpg/revision/latest/scale-to-width-down/200?cb=20180520062749"},
+    {id:"samoa",name:"Samoa",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/b/b4/Samoa.jpg/revision/latest/scale-to-width-down/200?cb=20231002031650"}
+  ],
+  "Escort": [
+    {id:"circuit-royal",name:"Circuit Royal",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/1/10/Monte_Carlo.jpg/revision/latest/scale-to-width-down/200?cb=20220926230154"},
+    {id:"dorado",name:"Dorado",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/e/ec/Dorado-streets2.jpg/revision/latest/scale-to-width-down/200?cb=20180520045217"},
+    {id:"havana",name:"Havana",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/9/93/Havana.png/revision/latest/scale-to-width-down/200?cb=20190512033804"},
+    {id:"junkertown",name:"Junkertown",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/e/e3/Junkertown.jpg/revision/latest/scale-to-width-down/200?cb=20170822090741"},
+    {id:"rialto",name:"Rialto",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/f/ff/Rialto.jpg/revision/latest/scale-to-width-down/200?cb=20190412043512"},
+    {id:"route-66",name:"Route 66",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/a/a6/Route_66.jpg/revision/latest/scale-to-width-down/200?cb=20180520050707"},
+    {id:"shambali-monastery",name:"Shambali Monastery",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/8/81/ShambaliEscort.png/revision/latest/scale-to-width-down/200?cb=20230421235244"},
+    {id:"watchpoint-gibraltar",name:"Watchpoint: Gibraltar",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/8/8b/Gibraltar.jpg/revision/latest/scale-to-width-down/200?cb=20180520050120"}
+  ],
+  "Flashpoint": [
+    {id:"aatlis",name:"Aatlis",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/e/e6/Aatlis_loading_screen.png/revision/latest/scale-to-width-down/200?cb=20250624194631"},
+    {id:"new-junk-city",name:"New Junk City",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/a/ae/New_Junk_City.jpg/revision/latest/scale-to-width-down/200?cb=20240419094558"},
+    {id:"suravasa",name:"Suravasa",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/6/6f/Suravasa.jpg/revision/latest/scale-to-width-down/200?cb=20230622084852"}
+  ],
+  "Hybrid": [
+    {id:"blizzard-world",name:"Blizzard World",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/f/f8/Blizzard_World.jpg/revision/latest/scale-to-width-down/200?cb=20190401012157"},
+    {id:"eichenwalde",name:"Eichenwalde",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/a/aa/Eichenwalde.png/revision/latest/scale-to-width-down/200?cb=20190412043329"},
+    {id:"hollywood",name:"Hollywood",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/2/26/Hollywood-set.jpg/revision/latest/scale-to-width-down/200?cb=20190506201443"},
+    {id:"kings-row",name:"King's Row",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/1/1b/King%27s_Row_concept.jpg/revision/latest/scale-to-width-down/200?cb=20180520052818"},
+    {id:"midtown",name:"Midtown",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/4/4e/N18S6DCTDPG81613669123002.png/revision/latest/scale-to-width-down/200?cb=20210221175110"},
+    {id:"numbani",name:"Numbani",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/1/1b/Numbani_Loading_Screen.jpg/revision/latest/scale-to-width-down/200?cb=20180520055541"},
+    {id:"paraiso",name:"Paraíso",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/9/90/Para%C3%ADso_pvp.jpg/revision/latest/scale-to-width-down/200?cb=20220630025520"}
+  ],
+  "Push": [
+    {id:"colosseo",name:"Colosseo",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/1/1e/Blizzconline_rome_01.png/revision/latest/scale-to-width-down/200?cb=20220926222702"},
+    {id:"esperanca",name:"Esperança",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/f/f5/PortugalPush.jpg/revision/latest/scale-to-width-down/200?cb=20220926215956"},
+    {id:"new-queen-street",name:"New Queen Street",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/9/91/Toronto.jpg/revision/latest/scale-to-width-down/200?cb=20220926222923"},
+    {id:"runasapi",name:"Runasapi",img:"https://static.wikia.nocookie.net/overwatch_gamepedia/images/0/07/Runasapi_2.jpg/revision/latest/scale-to-width-down/200?cb=20240623180847"}
+  ]
+};
+
+// ======================================================
+// STATE
+// ======================================================
+let selectedEnemies = { TANK: [], DAMAGE: [], SUPPORT: [] };
+const MAX_SELECT = { TANK: 1, DAMAGE: 2, SUPPORT: 2 };
+let selectedMap = "all-maps";
+let statsCache = {}; // key: "map_tier_region" -> { heroId: {winrate, pickrate} }
+
+// Counter data: sourceHeroId -> { targetHeroId: 0|1|2 }
+let counterData = {};
+HEROES.forEach(h => counterData[h.id] = {});
+
+// Default counter relationships
+const DEFAULT_COUNTERS = {
+"ana":{"dva":1,"reinhardt":1,"mauga":2,"roadhog":2,"ramattra":1,"cassidy":1,"bastion":1,"reaper":1,"symmetra":1,"echo":1,"torbjorn":1,"mei":1,"baptiste":1,"lucio":1,"brigitte":1,"lifeweaver":1,"jetpack-cat":1,"mercy":1},
+"anran":{"genji":2,"dva":1,"sigma":1,"wuyang":1,"ana":1,"lifeweaver":1,"moira":1,"zenyatta":1},
+"ashe":{"reinhardt":1,"roadhog":1,"orisa":1,"zarya":1,"bastion":1,"cassidy":2,"pharah":1,"symmetra":1,"torbjorn":1,"junkrat":1,"lifeweaver":2,"brigitte":2,"mercy":2,"illari":1,"moira":1,"jetpack-cat":2},
+"baptiste":{"reinhardt":1,"roadhog":1,"orisa":1,"ramattra":1,"reaper":1,"cassidy":1,"soldier-76":1,"echo":1,"tracer":1,"mei":1,"pharah":1,"lucio":1,"brigitte":1},
+"bastion":{"reinhardt":2,"winston":2,"orisa":1,"soldier-76":1,"torbjorn":1,"pharah":1,"mei":1,"hazard":1,"zarya":2,"brigitte":2,"jetpack-cat":2,"wrecking-ball":2},
+"brigitte":{"reinhardt":1,"dva":2,"roadhog":1,"doomfist":1,"hazard":1,"sigma":2,"winston":1,"wrecking-ball":2,"reaper":1,"sombra":1,"genji":2,"anran":1,"venture":1,"tracer":1},
+"cassidy":{"doomfist":2,"hazard":2,"anran":2,"venture":2,"vendetta":2,"tracer":2,"lucio":2,"winston":2,"wrecking-ball":2,"reaper":2,"sombra":2,"genji":2,"symmetra":1,"jetpack-cat":2,"pharah":2,"mercy":2},
+"dva":{"hazard":1,"wrecking-ball":1,"roadhog":1,"reinhardt":1,"orisa":1,"mauga":1,"sombra":1,"tracer":1,"pharah":1,"hanzo":2,"torbjorn":1,"ashe":2,"cassidy":2,"mercy":2,"jetpack-cat":2,"juno":1,"lifeweaver":1,"widowmaker":1,"zenyatta":1,"echo":1,"freja":1,"soldier-76":1},
+"domina":{"dva":1,"orisa":1,"doomfist":1,"hazard":1,"anran":1,"genji":2,"jetpack-cat":1,"mercy":1,"lifeweaver":1,"echo":1,"pharah":1,"sombra":1,"tracer":1,"vendetta":1,"venture":1},
+"doomfist":{"junker-queen":1,"soldier-76":2,"hazard":1,"hanzo":2,"venture":2,"widowmaker":2,"ashe":1,"zenyatta":2,"ana":2,"wuyang":1},
+"echo":{"dva":2,"reinhardt":1,"roadhog":1,"junker-queen":1,"orisa":1,"bastion":2,"reaper":1,"sojourn":1,"symmetra":1,"genji":2,"torbjorn":1,"junkrat":1,"venture":2,"mei":1,"pharah":2,"vendetta":2,"anran":2,"freja":1,"hanzo":1,"wuyang":2,"lifeweaver":1,"lucio":1,"brigitte":1,"mercy":1,"zenyatta":2,"moira":1,"doomfist":2,"hazard":2},
+"emre":{"reaper":1,"soldier-76":1,"wrecking-ball":1,"jetpack-cat":2,"mercy":2,"lifeweaver":1,"brigitte":1,"moira":1},
+"freja":{"orisa":1,"ramattra":1,"reinhardt":1,"roadhog":1,"winston":1,"domina":1,"hazard":1,"doomfist":1,"junker-queen":1,"cassidy":2,"ashe":2,"hanzo":2,"junkrat":1,"vendetta":1,"anran":1,"bastion":2,"mei":2,"ana":2,"illari":2,"zenyatta":2},
+"genji":{"roadhog":1,"ramattra":1,"bastion":2,"reaper":2,"junkrat":2,"orisa":1,"mauga":1,"wuyang":2,"baptiste":1,"ana":1,"zenyatta":1,"widowmaker":2,"hanzo":2},
+"hanzo":{"roadhog":1,"reaper":1,"junkrat":2,"mei":2,"soldier-76":1,"emre":1,"cassidy":2,"bastion":1,"ashe":2,"ana":2,"baptiste":1,"brigitte":1,"zenyatta":2,"illari":1,"widowmaker":1},
+"hazard":{"junker-queen":1,"winston":1,"ashe":2,"hanzo":2,"ana":1},
+"illari":{"doomfist":1,"reinhardt":1,"winston":1,"orisa":1,"ramattra":1,"reaper":1,"bastion":1,"cassidy":1,"soldier-76":1,"echo":1,"pharah":1,"tracer":1,"vendetta":1,"venture":1,"anran":1,"mei":1,"lucio":1,"baptiste":1,"juno":1,"mercy":1,"jetpack-cat":1,"brigitte":1},
+"jetpack-cat":{"wuyang":1,"symmetra":1,"sombra":1,"junkrat":1,"lucio":1,"mercy":1,"anran":1,"tracer":1,"vendetta":1,"venture":1,"hazard":1,"doomfist":1,"winston":1,"wrecking-ball":1},
+"junker-queen":{"dva":1,"roadhog":1,"winston":1,"soldier-76":1,"cassidy":1,"moira":1,"brigitte":1,"baptiste":1,"lifeweaver":1,"ana":1,"mercy":1},
+"junkrat":{"orisa":1,"venture":2,"bastion":1,"torbjorn":1,"wrecking-ball":1,"winston":2,"reinhardt":2,"reaper":1,"brigitte":2},
+"juno":{"doomfist":2,"junker-queen":2,"roadhog":1,"wrecking-ball":1,"sigma":1,"zarya":1,"ramattra":1,"reinhardt":1,"reaper":1,"hanzo":1,"tracer":1,"junkrat":2,"venture":2,"anran":2,"mei":2,"moira":1,"mercy":1,"lucio":1},
+"kiriko":{"doomfist":1,"junker-queen":1,"mauga":1,"sigma":1,"ashe":1,"symmetra":1,"hanzo":1,"venture":1,"ana":1},
+"lifeweaver":{"sigma":1,"zarya":1},
+"lucio":{"reinhardt":1,"junker-queen":1,"winston":1,"wrecking-ball":1,"widowmaker":1,"venture":2,"hanzo":1,"reaper":1},
+"mauga":{"doomfist":2,"roadhog":2,"junker-queen":1,"hazard":1,"winston":2,"wrecking-ball":2,"bastion":2,"junkrat":1,"pharah":1,"echo":1,"cassidy":2,"ramattra":1,"soldier-76":1,"hanzo":1,"ashe":1,"widowmaker":1,"lifeweaver":2,"mercy":2,"juno":1,"jetpack-cat":1},
+"mei":{"dva":2,"reinhardt":2,"orisa":1,"domina":2,"zarya":2,"roadhog":1,"junker-queen":1,"sigma":1,"cassidy":1,"torbjorn":1,"brigitte":1,"genji":2,"tracer":1},
+"mercy":{"venture":1},
+"mizuki":{"dva":1,"doomfist":2,"hazard":2,"wrecking-ball":1,"anran":2,"echo":1,"genji":2,"sombra":2,"vendetta":2,"venture":2,"tracer":1,"reaper":2,"moira":1,"lucio":1},
+"moira":{"dva":1,"sigma":1,"venture":1,"hanzo":1,"brigitte":1,"genji":2,"tracer":1},
+"orisa":{"doomfist":2,"hazard":2,"mauga":1,"roadhog":1,"junker-queen":1,"ramattra":2,"wrecking-ball":2,"cassidy":1,"torbjorn":1,"anran":1,"vendetta":1,"venture":2,"ashe":1,"sombra":2,"ana":2},
+"pharah":{"reinhardt":1,"roadhog":1,"junker-queen":1,"sigma":2,"orisa":1,"ramattra":1,"reaper":2,"venture":2,"vendetta":2,"junkrat":2,"anran":2,"symmetra":2,"genji":2,"hanzo":1,"mei":2,"wuyang":2,"moira":2,"brigitte":2,"lucio":2,"kiriko":1,"mizuki":1,"lifeweaver":1,"doomfist":2,"hazard":2},
+"ramattra":{"reinhardt":2,"sigma":1,"domina":1,"winston":1,"junker-queen":1,"zarya":1,"ashe":1,"widowmaker":1,"hanzo":1,"cassidy":1,"bastion":1,"brigitte":2},
+"reaper":{"roadhog":2,"winston":2,"mauga":2,"ramattra":1,"mei":2,"bastion":2,"venture":1,"vendetta":1,"wuyang":1,"zenyatta":1,"lifeweaver":1,"moira":1,"reinhardt":2,"hazard":1,"junker-queen":1,"zarya":1},
+"reinhardt":{"roadhog":1,"domina":1,"sigma":1,"zarya":2},
+"roadhog":{"hazard":2,"doomfist":1,"sigma":1,"wrecking-ball":1,"venture":2,"vendetta":1,"winston":1},
+"sigma":{"dva":1,"hazard":1,"doomfist":1,"mauga":1,"orisa":2,"reaper":1,"ashe":2,"cassidy":2,"hanzo":2,"widowmaker":2,"sojourn":2,"soldier-76":2,"emre":1,"freja":1,"torbjorn":1,"bastion":2,"illari":2},
+"sojourn":{"doomfist":1,"roadhog":1,"junker-queen":1,"mauga":2,"orisa":2,"wrecking-ball":1,"ramattra":1,"ashe":2,"bastion":2,"reaper":1,"cassidy":1,"soldier-76":1,"torbjorn":1,"sombra":1,"vendetta":1,"venture":1,"anran":1,"juno":1,"illari":1,"mercy":2,"baptiste":1,"jetpack-cat":2},
+"soldier-76":{"reaper":1,"cassidy":1,"echo":2,"pharah":2,"sombra":2,"anran":1,"mercy":2,"lifeweaver":1,"juno":1,"jetpack-cat":2},
+"sombra":{"roadhog":1,"hazard":2,"sigma":1,"wrecking-ball":1,"widowmaker":1,"hanzo":1,"bastion":1,"echo":2,"venture":2,"wuyang":1,"zenyatta":1,"juno":2,"mercy":2,"lifeweaver":2,"ana":2,"reinhardt":1,"mei":2,"doomfist":1},
+"symmetra":{"dva":2,"reinhardt":1,"sigma":2,"brigitte":2,"mizuki":1,"genji":2,"tracer":1,"reaper":1,"sojourn":1},
+"torbjorn":{"reinhardt":1,"hazard":1,"junker-queen":1,"winston":1,"wrecking-ball":1,"tracer":1,"anran":1,"genji":1,"cassidy":1,"reaper":1,"moira":2,"brigitte":1,"jetpack-cat":1},
+"tracer":{"doomfist":2,"hazard":2,"orisa":1,"wrecking-ball":2,"ramattra":1,"ashe":2,"reaper":1,"sojourn":1,"sombra":1,"hanzo":2,"junkrat":1,"venture":1,"widowmaker":1,"wuyang":2,"ana":2,"mercy":2,"kiriko":1,"zenyatta":2,"moira":1},
+"vendetta":{"reinhardt":2,"dva":2,"sigma":1,"ashe":1,"hanzo":1,"widowmaker":1,"bastion":1,"wuyang":2,"moira":1,"zenyatta":2,"kiriko":1,"ana":2,"baptiste":1},
+"venture":{"hanzo":1,"mei":1,"symmetra":1,"wuyang":2,"ana":2,"zenyatta":2,"lifeweaver":1,"baptiste":1},
+"widowmaker":{"roadhog":1,"zarya":1,"pharah":2,"cassidy":2,"torbjorn":1,"symmetra":1,"soldier-76":1,"sojourn":1,"reaper":1,"ashe":2,"zenyatta":2,"moira":1,"illari":2,"brigitte":2,"baptiste":2,"ana":2,"lifeweaver":1,"jetpack-cat":2,"mercy":2},
+"winston":{"reinhardt":2,"sigma":1,"orisa":1,"zarya":1,"ashe":2,"soldier-76":2,"sombra":1,"genji":2,"widowmaker":2,"sojourn":1,"ana":1,"baptiste":1,"mercy":1,"zenyatta":1},
+"wrecking-ball":{"zarya":1,"widowmaker":2,"soldier-76":2,"hanzo":2,"ana":1,"mercy":1,"moira":1,"wuyang":1,"zenyatta":1},
+"wuyang":{"reinhardt":2,"orisa":2,"ramattra":2,"sigma":2,"roadhog":2,"mauga":1,"domina":2,"emre":1,"bastion":2,"ana":2,"illari":1,"zenyatta":2,"dva":1,"hazard":1,"hanzo":1,"junkrat":1,"cassidy":1,"ashe":1,"torbjorn":1,"symmetra":1,"mei":1,"moira":1,"lifeweaver":1,"kiriko":1,"brigitte":1,"baptiste":1},
+"zarya":{"dva":2,"hazard":1,"doomfist":1,"orisa":2,"roadhog":1,"junker-queen":1,"mauga":1,"sojourn":2,"junkrat":2,"hanzo":2,"torbjorn":2,"cassidy":1,"echo":1,"sombra":1,"genji":2,"freja":2},
+"zenyatta":{"reinhardt":2,"orisa":2,"mauga":1,"hazard":1,"roadhog":2,"domina":2,"sigma":2,"ramattra":2,"bastion":2,"mei":1,"torbjorn":1,"symmetra":1,"soldier-76":1,"cassidy":1,"ashe":1,"ana":2,"lifeweaver":1,"baptiste":1,"juno":1,"brigitte":1,"illari":1,"moira":1,"lucio":1}
+};
+// Apply defaults
+Object.keys(DEFAULT_COUNTERS).forEach(src => {
+  if (!counterData[src]) counterData[src] = {};
+  Object.assign(counterData[src], DEFAULT_COUNTERS[src]);
+});
+
+// DPS subcategories: heroId -> { hitscan: bool, dive: bool }
+let dpsCategories = {};
+HEROES.filter(h => h.role === 'DAMAGE').forEach(h => {
+  dpsCategories[h.id] = { hitscan: false, dive: false };
+});
+
+// Default hitscan heroes
+['ashe','bastion','cassidy','emre','freja','hanzo','torbjorn'].forEach(id => {
+  if (dpsCategories[id]) dpsCategories[id].hitscan = true;
+});
+// Default dive heroes
+['anran','echo','genji','pharah','reaper','sombra','tracer','vendetta','venture','widowmaker'].forEach(id => {
+  if (dpsCategories[id]) dpsCategories[id].dive = true;
+});
+// Default both (hitscan + dive)
+['junkrat','mei','sojourn','soldier-76','symmetra'].forEach(id => {
+  if (dpsCategories[id]) { dpsCategories[id].hitscan = true; dpsCategories[id].dive = true; }
+});
+
+// Support subcategories: heroId -> { flex: bool, main: bool }
+let suppCategories = {};
+HEROES.filter(h => h.role === 'SUPPORT').forEach(h => {
+  suppCategories[h.id] = { flex: false, main: false };
+});
+// Default flex supports
+['ana','baptiste','kiriko'].forEach(id => {
+  if (suppCategories[id]) suppCategories[id].flex = true;
+});
+// Default main supports
+['brigitte','illari','jetpack-cat','lucio','mizuki','wuyang','zenyatta'].forEach(id => {
+  if (suppCategories[id]) suppCategories[id].main = true;
+});
+// Default both (flex + main)
+['juno','lifeweaver','mercy','moira'].forEach(id => {
+  if (suppCategories[id]) { suppCategories[id].flex = true; suppCategories[id].main = true; }
+});
+
+// ======================================================
+// TAB SWITCHING
+// ======================================================
+function switchTab(tabId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ======================================================
+// RENDER MAP GRID
+// ======================================================
+function renderMapGrid() {
+  const grid = document.getElementById('mapGrid');
+  let html = `<div class="map-card ${selectedMap === 'all-maps' ? 'selected' : ''}" onclick="selectMap('all-maps', this)">
+    <div style="height:72px;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">ALL</div>
+    <div class="map-info"><div class="map-type">All</div>All Maps</div></div>`;
+  for (const [type, maps] of Object.entries(MAPS)) {
+    maps.forEach(m => {
+      html += `<div class="map-card ${selectedMap === m.id ? 'selected' : ''}" onclick="selectMap('${m.id}', this)">
+        <img src="${m.img}" alt="${m.name}" loading="lazy">
+        <div class="map-info"><div class="map-type">${type}</div>${m.name}</div></div>`;
+    });
+  }
+  grid.innerHTML = html;
+}
+
+function selectMap(mapId, el) {
+  selectedMap = mapId;
+  document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  onConfigChange();
+}
+
+// Auto-fetch when rank/region/map changes
+let fetchDebounceTimer = null;
+function onConfigChange() {
+  clearTimeout(fetchDebounceTimer);
+  fetchDebounceTimer = setTimeout(() => {
+    fetchStats().then(() => { tryAutoCalculate(); });
+  }, 300);
+}
+
+function getEnemyCount() {
+  return selectedEnemies.TANK.length + selectedEnemies.DAMAGE.length + selectedEnemies.SUPPORT.length;
+}
+
+function tryAutoCalculate() {
+  if (getEnemyCount() === 5) {
+    calculate();
+  }
+}
+
+// ======================================================
+// RENDER ENEMY HERO GRIDS
+// ======================================================
+function renderEnemyGrids() {
+  ['TANK','DAMAGE','SUPPORT'].forEach(role => {
+    const gridId = 'enemy-' + role.toLowerCase() + '-grid';
+    const grid = document.getElementById(gridId);
+    const heroes = HEROES.filter(h => h.role === role);
+    grid.innerHTML = heroes.map(h => `
+      <div class="hero-icon" id="enemy-${h.id}" data-hero="${h.id}" data-role="${role}"
+           onclick="toggleEnemy('${h.id}','${role}')">
+        <img src="${h.portrait}" alt="${h.name}" loading="lazy">
+        <div class="hero-label">${h.name}</div>
+      </div>
+    `).join('');
+  });
+}
+
+function toggleEnemy(heroId, role) {
+  const idx = selectedEnemies[role].indexOf(heroId);
+  if (idx >= 0) {
+    selectedEnemies[role].splice(idx, 1);
+  } else if (selectedEnemies[role].length < MAX_SELECT[role]) {
+    selectedEnemies[role].push(heroId);
+  } else {
+    return;
+  }
+  updateEnemyUI();
+  tryAutoCalculate();
+}
+
+function updateEnemyUI() {
+  ['TANK','DAMAGE','SUPPORT'].forEach(role => {
+    const heroes = HEROES.filter(h => h.role === role);
+    const full = selectedEnemies[role].length >= MAX_SELECT[role];
+    heroes.forEach(h => {
+      const el = document.getElementById('enemy-' + h.id);
+      if (!el) return;
+      const isSelected = selectedEnemies[role].includes(h.id);
+      el.classList.toggle('selected', isSelected);
+      el.classList.toggle('disabled', full && !isSelected);
+    });
+  });
+}
+
+function clearEnemySelection() {
+  selectedEnemies = { TANK: [], DAMAGE: [], SUPPORT: [] };
+  updateEnemyUI();
+  document.getElementById('resultsSection').style.display = 'none';
+}
+
+// ======================================================
+// PROXY SELECTION
+// ======================================================
+function onProxySelect() {
+  const sel = document.getElementById('proxySelect');
+  const input = document.getElementById('proxyInput');
+  if (sel.value === 'custom') {
+    input.value = '';
+    input.focus();
+  } else {
+    input.value = sel.value;
+  }
+}
+
+// ======================================================
+// FETCH STATS VIA CORS PROXY
+// ======================================================
+async function fetchStats() {
+  const proxy = document.getElementById('proxyInput').value.trim();
+  const tier = document.getElementById('rankSelect').value;
+  const region = document.getElementById('regionSelect').value;
+  const map = selectedMap;
+  const btn = document.getElementById('fetchBtn');
+  const status = document.getElementById('fetchStatus');
+  const dot = document.getElementById('dataStatusDot');
+  const dotText = document.getElementById('dataStatusText');
+
+  btn.disabled = true;
+  status.innerHTML = '<span class="spinner"></span> Fetching data...';
+
+  const cacheKey = `${map}_${tier}_${region}`;
+  let allData = {};
+  const mapParam = (map === 'all-maps') ? '' : map;
+
+  try {
+    // First try fetching All roles at once
+    const blizzUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=All&rq=1&tier=${tier}`;
+    const fetchUrl = proxy + encodeURIComponent(blizzUrl);
+
+    status.innerHTML = '<span class="spinner"></span> Fetching all heroes...';
+    const resp = await fetch(fetchUrl);
+    let htmlStr = await getHtmlFromProxyResponse(resp);
+    allData = parseBlizzardHtml(htmlStr);
+
+    // If All roles returned nothing, try individual roles
+    if (Object.keys(allData).length === 0) {
+      const roles = ['Tank', 'Damage', 'Support'];
+      for (const role of roles) {
+        const roleUrl = `https://overwatch.blizzard.com/en-us/rates/?input=PC&map=${mapParam}&region=${region}&role=${role}&rq=1&tier=${tier}`;
+        status.innerHTML = `<span class="spinner"></span> Fetching ${role}...`;
+        const roleResp = await fetch(proxy + encodeURIComponent(roleUrl));
+        const roleHtml = await getHtmlFromProxyResponse(roleResp);
+        Object.assign(allData, parseBlizzardHtml(roleHtml));
+      }
+    }
+
+    const count = Object.keys(allData).length;
+    statsCache[cacheKey] = allData;
+    status.textContent = `Loaded ${count} heroes for ${tier} / ${map === 'all-maps' ? 'All Maps' : map}`;
+    dot.className = 'status-dot' + (count > 0 ? ' ok' : '');
+    dotText.textContent = count > 0 ? `Data: ${tier} / ${map === 'all-maps' ? 'All Maps' : map}` : 'No data parsed';
+  } catch (err) {
+    status.textContent = 'Fetch failed: ' + err.message + ' (try different proxy or Manual Import)';
+    dot.className = 'status-dot';
+    dotText.textContent = 'Fetch failed';
+    console.error(err);
+  }
+  btn.disabled = false;
+}
+
+async function getHtmlFromProxyResponse(resp) {
+  const text = await resp.text();
+  try {
+    const json = JSON.parse(text);
+    // allorigins format: {contents: "..."} or {body: "..."}
+    return json.contents || json.body || text;
+  } catch(e) {
+    // Not JSON, return raw text (corsproxy.io style)
+    return text;
+  }
+}
+
+function parseBlizzardHtml(htmlStr) {
+  // The allrows attribute contains all hero data as JSON
+  const result = {};
+  try {
+    // Try to find the allrows attribute
+    const match = htmlStr.match(/allrows="(\[.*?\])"/);
+    if (match) {
+      // Decode HTML entities
+      const decoded = match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      const data = JSON.parse(decoded);
+      data.forEach(h => {
+        result[h.id] = {
+          winrate: h.cells.winrate,
+          pickrate: h.cells.pickrate
+        };
+      });
+    } else {
+      // Fallback: try to find individual hero data from the rendered cells
+      const winrateMatches = htmlStr.matchAll(/id="([a-z0-9-]+)-winrate-value">([0-9.]+)%/g);
+      const pickrateMatches = htmlStr.matchAll(/id="([a-z0-9-]+)-pickrate-value">([0-9.]+)%/g);
+      const winrates = {};
+      const pickrates = {};
+      for (const m of winrateMatches) winrates[m[1]] = parseFloat(m[2]);
+      for (const m of pickrateMatches) pickrates[m[1]] = parseFloat(m[2]);
+      for (const id of Object.keys(winrates)) {
+        result[id] = { winrate: winrates[id], pickrate: pickrates[id] || 0 };
+      }
+    }
+  } catch(e) {
+    console.error('Parse error:', e);
+  }
+  return result;
+}
+
+// ======================================================
+// MANUAL HTML PASTE IMPORT
+// ======================================================
+function toggleManualImport() {
+  const section = document.getElementById('manualImportSection');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function parseManualHtml() {
+  const htmlStr = document.getElementById('manualHtmlTextarea').value;
+  const status = document.getElementById('manualParseStatus');
+  if (!htmlStr.trim()) {
+    status.textContent = 'Paste HTML source code first.';
+    return;
+  }
+
+  const parsed = parseBlizzardHtml(htmlStr);
+  const count = Object.keys(parsed).length;
+  if (count === 0) {
+    status.textContent = 'No hero data found. Make sure you pasted the full page source.';
+    return;
+  }
+
+  const tier = document.getElementById('rankSelect').value;
+  const region = document.getElementById('regionSelect').value;
+  const cacheKey = `${selectedMap}_${tier}_${region}`;
+  statsCache[cacheKey] = { ...(statsCache[cacheKey] || {}), ...parsed };
+
+  status.textContent = `Parsed ${count} heroes successfully!`;
+  document.getElementById('dataStatusDot').className = 'status-dot ok';
+  document.getElementById('dataStatusText').textContent = `Data: ${tier} / ${selectedMap === 'all-maps' ? 'All Maps' : selectedMap} (manual)`;
+}
+
+// ======================================================
+// CALCULATE RECOMMENDATIONS
+// ======================================================
+function calculate(manual) {
+  const allEnemies = [...selectedEnemies.TANK, ...selectedEnemies.DAMAGE, ...selectedEnemies.SUPPORT];
+  if (allEnemies.length === 0) {
+    if (manual) alert('Please select at least one enemy hero.');
+    return;
+  }
+
+  const counterNormal = parseFloat(document.getElementById('counterNormal').value) || 1;
+  const counterHardVal = parseFloat(document.getElementById('counterHard').value) || 1.5;
+  const baseScoreVal = parseFloat(document.getElementById('baseScore').value) || 10;
+  const penaltyFactor = parseFloat(document.getElementById('penaltyFactor').value) || 1;
+  const weightTank = parseFloat(document.getElementById('weightTank').value) || 2;
+  const weightDamage = parseFloat(document.getElementById('weightDamage').value) || 1;
+  const weightSupport = parseFloat(document.getElementById('weightSupport').value) || 1;
+
+  const roleWeights = { TANK: weightTank, DAMAGE: weightDamage, SUPPORT: weightSupport };
+
+  // Get current stats cache key
+  const tier = document.getElementById('rankSelect').value;
+  const region = document.getElementById('regionSelect').value;
+  const cacheKey = `${selectedMap}_${tier}_${region}`;
+  const stats = statsCache[cacheKey] || {};
+
+  function scoreHero(heroId) {
+    let counterBonus = 0;
+    let counterPenalty = 0;
+    const hero = HERO_MAP[heroId];
+    for (const enemyId of allEnemies) {
+      const enemyHero = HERO_MAP[enemyId];
+      const enemyWeight = roleWeights[enemyHero.role] || 1;
+      // Bonus: how much I counter this enemy
+      const myCounter = (counterData[heroId] && counterData[heroId][enemyId]) || 0;
+      if (myCounter > 0) {
+        const val = myCounter === 1 ? counterNormal : counterHardVal;
+        counterBonus += val * enemyWeight;
+      }
+      // Penalty: how much this enemy counters me
+      const theirCounter = (counterData[enemyId] && counterData[enemyId][heroId]) || 0;
+      if (theirCounter > 0) {
+        const val = theirCounter === 1 ? counterNormal : counterHardVal;
+        counterPenalty += val * enemyWeight;
+      }
+    }
+    // score = max(0, base + bonus - penalty*factor) * winrate/50
+    let score = Math.max(0, baseScoreVal + counterBonus - counterPenalty * penaltyFactor);
+    const heroStats = stats[heroId];
+    if (heroStats && heroStats.winrate) {
+      score = score * (heroStats.winrate / 50);
+    }
+    return score;
+  }
+
+  // Build rankings for each position
+  const positions = [
+    { key: 'tank', label: 'Tank', cssClass: 'tank',
+      candidates: HEROES.filter(h => h.role === 'TANK') },
+    { key: 'hitscan', label: 'Hitscan DPS', cssClass: 'hitscan',
+      candidates: HEROES.filter(h => h.role === 'DAMAGE' && dpsCategories[h.id] && dpsCategories[h.id].hitscan) },
+    { key: 'dive', label: 'Dive DPS', cssClass: 'dive',
+      candidates: HEROES.filter(h => h.role === 'DAMAGE' && dpsCategories[h.id] && dpsCategories[h.id].dive) },
+    { key: 'flex', label: 'Flex Support', cssClass: 'flex-supp',
+      candidates: HEROES.filter(h => h.role === 'SUPPORT' && suppCategories[h.id] && suppCategories[h.id].flex) },
+    { key: 'main', label: 'Main Support', cssClass: 'main-supp',
+      candidates: HEROES.filter(h => h.role === 'SUPPORT' && suppCategories[h.id] && suppCategories[h.id].main) },
+  ];
+
+  const container = document.getElementById('resultsContainer');
+  let html = '';
+
+  // First pass: compute all scores to find global max
+  let globalMax = 0;
+  const positionData = positions.map(pos => {
+    const scored = pos.candidates.map(h => ({
+      hero: h,
+      score: scoreHero(h.id),
+      stats: stats[h.id] || null
+    })).sort((a, b) => b.score - a.score);
+    scored.forEach(s => { if (s.score > globalMax) globalMax = s.score; });
+    return { pos, scored };
+  });
+  if (globalMax === 0) globalMax = 1;
+
+  // Second pass: render with color overlay
+  positionData.forEach(({ pos, scored }) => {
+    html += `<div class="result-row">
+      <div class="result-position ${pos.cssClass}">${pos.label}</div>
+      <div class="result-heroes">`;
+
+    if (scored.length === 0) {
+      html += `<div class="no-results">No heroes in this category. Configure in Settings.</div>`;
+    } else {
+      scored.forEach((item, i) => {
+        const wr = item.stats ? item.stats.winrate + '%' : 'N/A';
+        const pr = item.stats ? item.stats.pickrate + '%' : 'N/A';
+        // Color: 0 = red(hsl 0), max = green(hsl 120)
+        const ratio = item.score / globalMax;
+        const hue = Math.round(120 * ratio);
+        const cardBg = `hsla(${hue}, 70%, 30%, 0.35)`;
+        html += `<div class="result-hero-card" style="background:${cardBg};" data-tooltip="${item.hero.name}" onclick="showFormulaBreakdown('${item.hero.id}')">
+          <div class="rank-badge">#${i + 1}</div>
+          <img src="${item.hero.portrait}" alt="${item.hero.name}" loading="lazy">
+          <div class="hero-name-small">${item.hero.name}</div>
+          <div class="score-label">${item.score.toFixed(1)} pts</div>
+          <div class="pick-label">WR ${wr} | PR ${pr}</div>
+        </div>`;
+      });
+    }
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+  document.getElementById('formulaSection').style.display = 'none';
+  document.getElementById('resultsSection').style.display = 'block';
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ======================================================
+// FORMULA BREAKDOWN
+// ======================================================
+function showFormulaBreakdown(heroId) {
+  const hero = HERO_MAP[heroId];
+  if (!hero) return;
+
+  const allEnemies = [...selectedEnemies.TANK, ...selectedEnemies.DAMAGE, ...selectedEnemies.SUPPORT];
+  if (allEnemies.length === 0) return;
+
+  const counterNormal = parseFloat(document.getElementById('counterNormal').value) || 1;
+  const counterHardVal = parseFloat(document.getElementById('counterHard').value) || 1.5;
+  const baseScoreVal = parseFloat(document.getElementById('baseScore').value) || 10;
+  const pf = parseFloat(document.getElementById('penaltyFactor').value) || 1;
+  const weightTank = parseFloat(document.getElementById('weightTank').value) || 2;
+  const weightDamage = parseFloat(document.getElementById('weightDamage').value) || 1;
+  const weightSupport = parseFloat(document.getElementById('weightSupport').value) || 1;
+  const roleWeights = { TANK: weightTank, DAMAGE: weightDamage, SUPPORT: weightSupport };
+
+  const tier = document.getElementById('rankSelect').value;
+  const region = document.getElementById('regionSelect').value;
+  const cacheKey = `${selectedMap}_${tier}_${region}`;
+  const stats = statsCache[cacheKey] || {};
+
+  // Gather bonuses and penalties
+  let bonuses = [];
+  let penalties = [];
+  let bonusTotal = 0;
+  let penaltyTotal = 0;
+
+  for (const enemyId of allEnemies) {
+    const enemy = HERO_MAP[enemyId];
+    const w = roleWeights[enemy.role] || 1;
+    // Bonus
+    const myC = (counterData[heroId] && counterData[heroId][enemyId]) || 0;
+    if (myC > 0) {
+      const cv = myC === 1 ? counterNormal : counterHardVal;
+      const val = cv * w;
+      bonusTotal += val;
+      bonuses.push({ enemy, level: myC, cv, w, val });
+    }
+    // Penalty
+    const theirC = (counterData[enemyId] && counterData[enemyId][heroId]) || 0;
+    if (theirC > 0) {
+      const cv = theirC === 1 ? counterNormal : counterHardVal;
+      const raw = cv * w;
+      const val = raw * pf;
+      penaltyTotal += val;
+      penalties.push({ enemy, level: theirC, cv, w, raw, val });
+    }
+  }
+
+  const rawScore = baseScoreVal + bonusTotal - penaltyTotal;
+  const flooredScore = Math.max(0, rawScore);
+  const heroStats = stats[heroId];
+  const wr = heroStats && heroStats.winrate ? heroStats.winrate : null;
+  const finalScore = wr ? flooredScore * (wr / 50) : flooredScore;
+
+  // Build HTML
+  let html = '';
+
+  // Header
+  html += `<div class="formula-header">
+    <img src="${hero.portrait}" alt="${hero.name}">
+    <div>
+      <div class="fh-name">${hero.name}</div>
+      <div class="fh-score">Final Score: ${finalScore.toFixed(2)} pts</div>
+    </div>
+  </div>`;
+
+  html += `<div class="formula-flow">`;
+
+  // Base
+  html += `<div class="formula-row-label">Base Score</div>`;
+  html += `<span class="f-base">Base = ${baseScoreVal}</span>`;
+
+  // Bonuses
+  if (bonuses.length > 0) {
+    html += `<div class="formula-row-label">Counter Bonuses (I counter them)</div>`;
+    bonuses.forEach((b, i) => {
+      if (i > 0) html += `<span class="f-op">+</span>`;
+      const levelTag = b.level === 2 ? 'HC' : 'C';
+      html += `<span class="f-bonus">
+        <img src="${b.enemy.portrait}" title="${b.enemy.name}">
+        <span class="fb-val">+${b.val.toFixed(2)}</span>
+        <span class="fb-detail">${levelTag} ${b.cv}&times;${b.w}w</span>
+      </span>`;
+    });
+    html += `<span class="f-op">=</span><span class="f-subtotal">+${bonusTotal.toFixed(2)}</span>`;
+  } else {
+    html += `<div class="formula-row-label">Counter Bonuses</div>`;
+    html += `<span class="f-subtotal" style="opacity:0.5">No counters (+0)</span>`;
+  }
+
+  // Penalties
+  if (penalties.length > 0) {
+    html += `<div class="formula-row-label">Enemy Counters Me (penalty &times;${pf})</div>`;
+    penalties.forEach((p, i) => {
+      if (i > 0) html += `<span class="f-op">+</span>`;
+      const levelTag = p.level === 2 ? 'HC' : 'C';
+      html += `<span class="f-penalty">
+        <img src="${p.enemy.portrait}" title="${p.enemy.name}">
+        <span class="fp-val">&minus;${p.val.toFixed(2)}</span>
+        <span class="fp-detail">${levelTag} ${p.cv}&times;${p.w}w&times;${pf}</span>
+      </span>`;
+    });
+    html += `<span class="f-op">=</span><span class="f-subtotal" style="color:#e74c3c;">&minus;${penaltyTotal.toFixed(2)}</span>`;
+  } else {
+    html += `<div class="formula-row-label">Enemy Counters Me</div>`;
+    html += `<span class="f-subtotal" style="opacity:0.5">No threats (&minus;0)</span>`;
+  }
+
+  // Subtotal
+  html += `<div class="formula-row-label">Subtotal</div>`;
+  html += `<span class="f-base">${baseScoreVal}</span>`;
+  if (bonusTotal > 0) html += `<span class="f-op">+</span><span class="f-subtotal" style="color:#2ecc71;">+${bonusTotal.toFixed(2)}</span>`;
+  if (penaltyTotal > 0) html += `<span class="f-op">&minus;</span><span class="f-subtotal" style="color:#e74c3c;">${penaltyTotal.toFixed(2)}</span>`;
+  html += `<span class="f-op">=</span>`;
+  if (rawScore < 0) {
+    html += `<span class="f-subtotal" style="color:#e74c3c;text-decoration:line-through;">${rawScore.toFixed(2)}</span>`;
+    html += `<span class="f-op">&rarr;</span><span class="f-subtotal">max(0) = 0</span>`;
+  } else {
+    html += `<span class="f-subtotal">${flooredScore.toFixed(2)}</span>`;
+  }
+
+  // Winrate
+  html += `<div class="formula-row-label">Winrate Multiplier</div>`;
+  html += `<span class="f-subtotal">${flooredScore.toFixed(2)}</span>`;
+  html += `<span class="f-op">&times;</span>`;
+  if (wr) {
+    html += `<span class="f-wr">WR ${wr}% / 50 = ${(wr / 50).toFixed(3)}</span>`;
+  } else {
+    html += `<span class="f-wr" style="opacity:0.5">No WR data (&times;1)</span>`;
+  }
+  html += `<span class="f-op">=</span>`;
+  html += `<span class="f-final">${finalScore.toFixed(2)} pts</span>`;
+
+  html += `</div>`;
+
+  document.getElementById('formulaContainer').innerHTML = html;
+  const sec = document.getElementById('formulaSection');
+  sec.style.display = 'block';
+
+  // Highlight active card
+  document.querySelectorAll('.result-hero-card').forEach(c => c.classList.remove('formula-active'));
+  document.querySelectorAll(`.result-hero-card`).forEach(c => {
+    if (c.getAttribute('onclick') && c.getAttribute('onclick').includes("'" + heroId + "'")) {
+      c.classList.add('formula-active');
+    }
+  });
+
+  sec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ======================================================
+// SETTINGS: DPS CATEGORIES
+// ======================================================
+function renderDpsCategories() {
+  const list = document.getElementById('dpsCategoryList');
+  const dpsHeroes = HEROES.filter(h => h.role === 'DAMAGE');
+  list.innerHTML = dpsHeroes.map(h => {
+    const cat = dpsCategories[h.id];
+    let classes = 'category-tag';
+    let label = '';
+    if (cat.hitscan && cat.dive) {
+      classes += ' active-both-dps';
+      label = '<span class="cat-label" style="color:#ff6b6b;">BOTH</span>';
+    } else if (cat.hitscan) {
+      classes += ' active-hitscan';
+      label = '<span class="cat-label" style="color:var(--dps-color);">HIT</span>';
+    } else if (cat.dive) {
+      classes += ' active-dive';
+      label = '<span class="cat-label" style="color:#ff9800;">DIVE</span>';
+    }
+    return `<div class="${classes}" id="dps-cat-${h.id}" onclick="cycleDpsCat('${h.id}')">
+      <img src="${h.portrait}" alt="${h.name}"><span>${h.name}</span>${label}
+    </div>`;
+  }).join('');
+}
+
+function cycleDpsCat(heroId) {
+  const cat = dpsCategories[heroId];
+  // Cycle: none → hitscan → dive → both → none
+  if (!cat.hitscan && !cat.dive) { cat.hitscan = true; cat.dive = false; }
+  else if (cat.hitscan && !cat.dive) { cat.hitscan = false; cat.dive = true; }
+  else if (!cat.hitscan && cat.dive) { cat.hitscan = true; cat.dive = true; }
+  else { cat.hitscan = false; cat.dive = false; }
+  renderDpsCategories();
+}
+
+function filterDpsCat(filter, btn) {
+  btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tags = document.querySelectorAll('#dpsCategoryList .category-tag');
+  tags.forEach(tag => {
+    const id = tag.id.replace('dps-cat-', '');
+    const cat = dpsCategories[id];
+    let show = true;
+    if (filter === 'hitscan') show = cat.hitscan && !cat.dive;
+    else if (filter === 'dive') show = cat.dive && !cat.hitscan;
+    else if (filter === 'both') show = cat.hitscan && cat.dive;
+    else if (filter === 'unset') show = !cat.hitscan && !cat.dive;
+    tag.style.display = show ? '' : 'none';
+  });
+}
+
+// ======================================================
+// SETTINGS: SUPPORT CATEGORIES
+// ======================================================
+function renderSuppCategories() {
+  const list = document.getElementById('suppCategoryList');
+  const suppHeroes = HEROES.filter(h => h.role === 'SUPPORT');
+  list.innerHTML = suppHeroes.map(h => {
+    const cat = suppCategories[h.id];
+    let classes = 'category-tag';
+    let label = '';
+    if (cat.flex && cat.main) {
+      classes += ' active-both-supp';
+      label = '<span class="cat-label" style="color:#66ffcc;">BOTH</span>';
+    } else if (cat.flex) {
+      classes += ' active-flex';
+      label = '<span class="cat-label" style="color:var(--support-color);">FLEX</span>';
+    } else if (cat.main) {
+      classes += ' active-main';
+      label = '<span class="cat-label" style="color:#4dd0e1;">MAIN</span>';
+    }
+    return `<div class="${classes}" id="supp-cat-${h.id}" onclick="cycleSuppCat('${h.id}')">
+      <img src="${h.portrait}" alt="${h.name}"><span>${h.name}</span>${label}
+    </div>`;
+  }).join('');
+}
+
+function cycleSuppCat(heroId) {
+  const cat = suppCategories[heroId];
+  // Cycle: none → flex → main → both → none
+  if (!cat.flex && !cat.main) { cat.flex = true; cat.main = false; }
+  else if (cat.flex && !cat.main) { cat.flex = false; cat.main = true; }
+  else if (!cat.flex && cat.main) { cat.flex = true; cat.main = true; }
+  else { cat.flex = false; cat.main = false; }
+  renderSuppCategories();
+}
+
+function filterSuppCat(filter, btn) {
+  btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tags = document.querySelectorAll('#suppCategoryList .category-tag');
+  tags.forEach(tag => {
+    const id = tag.id.replace('supp-cat-', '');
+    const cat = suppCategories[id];
+    let show = true;
+    if (filter === 'flex') show = cat.flex && !cat.main;
+    else if (filter === 'main') show = cat.main && !cat.flex;
+    else if (filter === 'both') show = cat.flex && cat.main;
+    else if (filter === 'unset') show = !cat.flex && !cat.main;
+    tag.style.display = show ? '' : 'none';
+  });
+}
+
+// ======================================================
+// SETTINGS: COUNTER MATRIX
+// ======================================================
+let counterRoleFilter = 'all';
+let openSections = new Set(); // track which hero sections are expanded
+
+function renderCounterRoleGroup(sourceId, counters, role, label, labelClass) {
+  const targets = HEROES.filter(h => h.role === role);
+  return `<div class="counter-role-group">
+    <span class="counter-role-label ${labelClass}">${label}</span>
+    ${targets.map(target => {
+      const level = counters[target.id] || 0;
+      const cls = level === 1 ? 'counter-normal' : level === 2 ? 'counter-hard' : '';
+      const badge = level === 1 ? 'C' : level === 2 ? 'HC' : '';
+      return `<div class="counter-target ${cls}" data-tooltip="${target.name}"
+                   onclick="event.stopPropagation(); cycleCounter('${sourceId}','${target.id}')">
+        <img src="${target.portrait}" alt="${target.name}" loading="lazy">
+        <span class="counter-badge">${badge}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderCounterMatrix() {
+  const container = document.getElementById('counterMatrix');
+  const filteredHeroes = counterRoleFilter === 'all' ? HEROES : HEROES.filter(h => h.role === counterRoleFilter);
+
+  container.innerHTML = filteredHeroes.map(source => {
+    const counters = counterData[source.id] || {};
+    const counterCount = Object.values(counters).filter(v => v > 0).length;
+    const isOpen = openSections.has(source.id);
+    return `<div class="counter-hero-section" data-role="${source.role}">
+      <div class="counter-hero-header" onclick="toggleCounterSection('${source.id}', this)">
+        <img src="${source.portrait}" alt="${source.name}">
+        <span class="name">${source.name}</span>
+        <span class="counter-count">${counterCount > 0 ? counterCount + ' counters' : ''}</span>
+        <span class="toggle-arrow ${isOpen ? 'open' : ''}">▼</span>
+      </div>
+      <div class="counter-targets ${isOpen ? 'open' : ''}" id="ct-${source.id}">
+        ${renderCounterRoleGroup(source.id, counters, 'TANK', 'T', 'tank-label')}
+        ${renderCounterRoleGroup(source.id, counters, 'DAMAGE', 'D', 'dps-label')}
+        ${renderCounterRoleGroup(source.id, counters, 'SUPPORT', 'S', 'supp-label')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCounterSection(heroId, header) {
+  if (openSections.has(heroId)) {
+    openSections.delete(heroId);
+  } else {
+    openSections.add(heroId);
+  }
+  const targets = header.nextElementSibling;
+  const arrow = header.querySelector('.toggle-arrow');
+  targets.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function expandAllCounters() {
+  HEROES.forEach(h => openSections.add(h.id));
+  document.querySelectorAll('.counter-targets').forEach(t => t.classList.add('open'));
+  document.querySelectorAll('.toggle-arrow').forEach(a => a.classList.add('open'));
+}
+function collapseAllCounters() {
+  openSections.clear();
+  document.querySelectorAll('.counter-targets').forEach(t => t.classList.remove('open'));
+  document.querySelectorAll('.toggle-arrow').forEach(a => a.classList.remove('open'));
+}
+
+function cycleCounter(sourceId, targetId) {
+  if (!counterData[sourceId]) counterData[sourceId] = {};
+  const current = counterData[sourceId][targetId] || 0;
+  const next = (current + 1) % 3;
+  if (next === 0) {
+    delete counterData[sourceId][targetId];
+  } else {
+    counterData[sourceId][targetId] = next;
+  }
+
+  // Partial DOM update only (no re-render, no collapse)
+  const container = document.getElementById('ct-' + sourceId);
+  if (container) {
+    const targets = container.querySelectorAll('.counter-target');
+    targets.forEach(el => {
+      const img = el.querySelector('img');
+      if (!img) return;
+      const tHero = HEROES.find(h => h.name === img.alt);
+      if (tHero && tHero.id === targetId) {
+        el.classList.remove('counter-normal', 'counter-hard');
+        const badge = el.querySelector('.counter-badge');
+        if (next === 1) {
+          el.classList.add('counter-normal');
+          badge.textContent = 'C';
+        } else if (next === 2) {
+          el.classList.add('counter-hard');
+          badge.textContent = 'HC';
+        } else {
+          badge.textContent = '';
+        }
+      }
+    });
+  }
+
+  // Update counter count label
+  const section = document.querySelector(`#ct-${sourceId}`).parentElement;
+  const countLabel = section.querySelector('.counter-count');
+  const counters = counterData[sourceId] || {};
+  const counterCount = Object.values(counters).filter(v => v > 0).length;
+  countLabel.textContent = counterCount > 0 ? counterCount + ' counters' : '';
+}
+
+function filterCounterRole(role, btn) {
+  btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  counterRoleFilter = role === 'all' ? 'all' : role;
+  renderCounterMatrix();
+}
+
+// ======================================================
+// IMPORT / EXPORT
+// ======================================================
+const SETTINGS_VERSION = 4;
+
+function getAllSettings() {
+  return {
+    _v: SETTINGS_VERSION,
+    counterData,
+    dpsCategories,
+    suppCategories,
+    baseScore: parseFloat(document.getElementById('baseScore').value),
+    counterNormal: parseFloat(document.getElementById('counterNormal').value),
+    counterHard: parseFloat(document.getElementById('counterHard').value),
+    penaltyFactor: parseFloat(document.getElementById('penaltyFactor').value),
+    weightTank: parseFloat(document.getElementById('weightTank').value),
+    weightDamage: parseFloat(document.getElementById('weightDamage').value),
+    weightSupport: parseFloat(document.getElementById('weightSupport').value),
+    proxyUrl: document.getElementById('proxyInput').value
+  };
+}
+
+function applySettings(data) {
+  if (data.counterData) counterData = data.counterData;
+  if (data.dpsCategories) dpsCategories = data.dpsCategories;
+  if (data.suppCategories) suppCategories = data.suppCategories;
+  if (data.baseScore != null) document.getElementById('baseScore').value = data.baseScore;
+  if (data.counterNormal != null) document.getElementById('counterNormal').value = data.counterNormal;
+  if (data.counterHard != null) document.getElementById('counterHard').value = data.counterHard;
+  if (data.penaltyFactor != null) document.getElementById('penaltyFactor').value = data.penaltyFactor;
+  if (data.weightTank != null) document.getElementById('weightTank').value = data.weightTank;
+  if (data.weightDamage != null) document.getElementById('weightDamage').value = data.weightDamage;
+  if (data.weightSupport != null) document.getElementById('weightSupport').value = data.weightSupport;
+  if (data.proxyUrl) document.getElementById('proxyInput').value = data.proxyUrl;
+
+  // Ensure all heroes exist in counter data
+  HEROES.forEach(h => {
+    if (!counterData[h.id]) counterData[h.id] = {};
+  });
+  HEROES.filter(h => h.role === 'DAMAGE').forEach(h => {
+    if (!dpsCategories[h.id]) dpsCategories[h.id] = { hitscan: false, dive: false };
+  });
+  HEROES.filter(h => h.role === 'SUPPORT').forEach(h => {
+    if (!suppCategories[h.id]) suppCategories[h.id] = { flex: false, main: false };
+  });
+
+  renderDpsCategories();
+  renderSuppCategories();
+  renderCounterMatrix();
+}
+
+function exportSettings() {
+  const data = getAllSettings();
+  document.getElementById('ioTextarea').value = JSON.stringify(data, null, 2);
+}
+
+function importSettings() {
+  try {
+    const text = document.getElementById('ioTextarea').value.trim();
+    if (!text) { alert('Paste JSON data first.'); return; }
+    const data = JSON.parse(text);
+    applySettings(data);
+    alert('Settings imported successfully!');
+  } catch (e) {
+    alert('Import failed: ' + e.message);
+  }
+}
+
+function saveToLocal() {
+  try {
+    localStorage.setItem('ow2_counter_settings', JSON.stringify(getAllSettings()));
+    alert('Saved to browser storage.');
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function loadFromLocal() {
+  try {
+    const raw = localStorage.getItem('ow2_counter_settings');
+    if (!raw) { alert('No saved data found.'); return; }
+    applySettings(JSON.parse(raw));
+    alert('Loaded from browser storage.');
+  } catch(e) {
+    alert('Load failed: ' + e.message);
+  }
+}
+
+function resetAllSettings() {
+  if (!confirm('Reset ALL settings to defaults? This cannot be undone.')) return;
+  // Reset counter data
+  counterData = {};
+  HEROES.forEach(h => counterData[h.id] = {});
+  Object.keys(DEFAULT_COUNTERS).forEach(src => {
+    if (!counterData[src]) counterData[src] = {};
+    Object.assign(counterData[src], DEFAULT_COUNTERS[src]);
+  });
+
+  // Reset DPS categories
+  dpsCategories = {};
+  HEROES.filter(h => h.role === 'DAMAGE').forEach(h => {
+    dpsCategories[h.id] = { hitscan: false, dive: false };
+  });
+  ['ashe','bastion','cassidy','emre','freja','hanzo','torbjorn'].forEach(id => {
+    if (dpsCategories[id]) dpsCategories[id].hitscan = true;
+  });
+  ['anran','echo','genji','pharah','reaper','sombra','tracer','vendetta','venture','widowmaker'].forEach(id => {
+    if (dpsCategories[id]) dpsCategories[id].dive = true;
+  });
+  ['junkrat','mei','sojourn','soldier-76','symmetra'].forEach(id => {
+    if (dpsCategories[id]) { dpsCategories[id].hitscan = true; dpsCategories[id].dive = true; }
+  });
+
+  // Reset support categories
+  suppCategories = {};
+  HEROES.filter(h => h.role === 'SUPPORT').forEach(h => {
+    suppCategories[h.id] = { flex: false, main: false };
+  });
+  ['ana','baptiste','kiriko'].forEach(id => {
+    if (suppCategories[id]) suppCategories[id].flex = true;
+  });
+  ['brigitte','illari','jetpack-cat','lucio','mizuki','wuyang','zenyatta'].forEach(id => {
+    if (suppCategories[id]) suppCategories[id].main = true;
+  });
+  ['juno','lifeweaver','mercy','moira'].forEach(id => {
+    if (suppCategories[id]) { suppCategories[id].flex = true; suppCategories[id].main = true; }
+  });
+
+  // Reset multipliers
+  document.getElementById('baseScore').value = 10;
+  document.getElementById('counterNormal').value = 1;
+  document.getElementById('counterHard').value = 1.5;
+  document.getElementById('penaltyFactor').value = 1;
+  document.getElementById('weightTank').value = 2;
+  document.getElementById('weightDamage').value = 1;
+  document.getElementById('weightSupport').value = 1;
+
+  renderDpsCategories();
+  renderSuppCategories();
+  renderCounterMatrix();
+  alert('All settings reset to defaults.');
+}
+
+// ======================================================
+// INIT
+// ======================================================
+function init() {
+  renderMapGrid();
+  renderEnemyGrids();
+  renderDpsCategories();
+  renderSuppCategories();
+  renderCounterMatrix();
+
+  // Try loading saved settings
+  try {
+    const raw = localStorage.getItem('ow2_counter_settings');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved._v === SETTINGS_VERSION) {
+        applySettings(saved);
+        document.getElementById('dataStatusDot').className = 'status-dot ok';
+        document.getElementById('dataStatusText').textContent = 'Settings loaded from browser';
+      } else {
+        // Outdated version, clear and save new defaults
+        localStorage.setItem('ow2_counter_settings', JSON.stringify(getAllSettings()));
+        document.getElementById('dataStatusDot').className = 'status-dot ok';
+        document.getElementById('dataStatusText').textContent = 'Defaults updated (v' + SETTINGS_VERSION + ')';
+      }
+    }
+  } catch(e) { /* ignore */ }
+}
+
+init();
+</script>
+</body>
+</html>
