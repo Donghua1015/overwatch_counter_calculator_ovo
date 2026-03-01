@@ -731,9 +731,24 @@ select.ow-select:focus { border-color: var(--accent-orange); }
 
 /* Map grid */
 .map-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.map-type-section-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 6px;
+}
+.map-type-section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 4px 2px 2px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 .map-card {
   background: var(--bg-card);
@@ -1540,8 +1555,8 @@ const DEFAULT_COUNTERS = {
 "bastion":{"reinhardt":2,"winston":2,"orisa":1,"soldier-76":1,"torbjorn":1,"pharah":1,"mei":1,"hazard":1,"zarya":2,"brigitte":2,"jetpack-cat":2,"wrecking-ball":2},
 "brigitte":{"reinhardt":1,"dva":2,"roadhog":1,"doomfist":1,"hazard":1,"sigma":2,"winston":1,"wrecking-ball":2,"reaper":1,"sombra":1,"genji":2,"anran":1,"venture":1,"tracer":1},
 "cassidy":{"doomfist":2,"hazard":2,"anran":2,"venture":2,"vendetta":2,"tracer":2,"lucio":2,"winston":2,"wrecking-ball":2,"reaper":2,"sombra":2,"genji":2,"symmetra":1,"jetpack-cat":2,"pharah":2,"mercy":2},
-"dva":{"hazard":1,"wrecking-ball":1,"roadhog":2,"reinhardt":1,"orisa":1,"mauga":1,"sombra":1,"tracer":1,"pharah":1,"hanzo":2,"torbjorn":1,"ashe":2,"cassidy":2,"mercy":2,"jetpack-cat":2,"juno":1,"lifeweaver":1,"widowmaker":1,"zenyatta":1,"echo":1,"freja":1,"soldier-76":1},
-"domina":{"dva":1,"orisa":2,"doomfist":2,"hazard":1,"anran":1,"genji":2,"jetpack-cat":1,"mercy":1,"lifeweaver":1,"echo":1,"pharah":1,"sombra":1,"tracer":1,"vendetta":1,"venture":1,"zarya":1,"mauga":1,"wrecking-ball":1},
+"dva":{"hazard":1,"wrecking-ball":1,"roadhog":1,"reinhardt":1,"orisa":1,"mauga":1,"sombra":1,"tracer":1,"pharah":1,"hanzo":2,"torbjorn":1,"ashe":2,"cassidy":2,"mercy":2,"jetpack-cat":2,"juno":1,"lifeweaver":1,"widowmaker":1,"zenyatta":1,"echo":1,"freja":1,"soldier-76":1},
+"domina":{"dva":1,"orisa":1,"doomfist":1,"hazard":1,"anran":1,"genji":2,"jetpack-cat":1,"mercy":1,"lifeweaver":1,"echo":1,"pharah":1,"sombra":1,"tracer":1,"vendetta":1,"venture":1},
 "doomfist":{"junker-queen":1,"soldier-76":2,"hazard":1,"hanzo":2,"venture":2,"widowmaker":2,"ashe":1,"zenyatta":2,"ana":2,"wuyang":1},
 "echo":{"dva":2,"reinhardt":1,"roadhog":1,"junker-queen":1,"orisa":1,"bastion":2,"reaper":1,"sojourn":1,"symmetra":1,"genji":2,"torbjorn":1,"junkrat":1,"venture":2,"mei":1,"pharah":2,"vendetta":2,"anran":2,"freja":1,"hanzo":1,"wuyang":2,"lifeweaver":1,"lucio":1,"brigitte":1,"mercy":1,"zenyatta":2,"moira":1,"doomfist":2,"hazard":2},
 "emre":{"reaper":1,"soldier-76":1,"wrecking-ball":1,"jetpack-cat":2,"mercy":2,"lifeweaver":1,"brigitte":1,"moira":1},
@@ -1559,20 +1574,20 @@ const DEFAULT_COUNTERS = {
 "lucio":{"reinhardt":1,"junker-queen":1,"winston":1,"wrecking-ball":1,"widowmaker":1,"venture":2,"hanzo":1,"reaper":1},
 "mauga":{"doomfist":2,"roadhog":2,"junker-queen":1,"hazard":1,"winston":2,"wrecking-ball":2,"bastion":2,"junkrat":1,"pharah":1,"echo":1,"cassidy":2,"ramattra":1,"soldier-76":1,"hanzo":1,"ashe":1,"widowmaker":1,"lifeweaver":2,"mercy":2,"juno":1,"jetpack-cat":1},
 "mei":{"dva":2,"reinhardt":2,"orisa":1,"domina":2,"zarya":2,"roadhog":1,"junker-queen":1,"sigma":1,"cassidy":1,"torbjorn":1,"brigitte":1,"genji":2,"tracer":1},
-"mercy":{"venture":1,"junkrat":1},
+"mercy":{"venture":1},
 "mizuki":{"dva":1,"doomfist":2,"hazard":2,"wrecking-ball":1,"anran":2,"echo":1,"genji":2,"sombra":2,"vendetta":2,"venture":2,"tracer":1,"reaper":2,"moira":1,"lucio":1},
 "moira":{"dva":1,"sigma":1,"venture":1,"hanzo":1,"brigitte":1,"genji":2,"tracer":1},
 "orisa":{"doomfist":2,"hazard":2,"mauga":1,"roadhog":1,"junker-queen":1,"ramattra":2,"wrecking-ball":2,"cassidy":1,"torbjorn":1,"anran":1,"vendetta":1,"venture":2,"ashe":1,"sombra":2,"ana":2},
 "pharah":{"reinhardt":1,"roadhog":1,"junker-queen":1,"sigma":2,"orisa":1,"ramattra":1,"reaper":2,"venture":2,"vendetta":2,"junkrat":2,"anran":2,"symmetra":2,"genji":2,"hanzo":1,"mei":2,"wuyang":2,"moira":2,"brigitte":2,"lucio":2,"kiriko":1,"mizuki":1,"lifeweaver":1,"doomfist":2,"hazard":2},
 "ramattra":{"reinhardt":2,"sigma":1,"domina":1,"winston":1,"junker-queen":1,"zarya":1,"ashe":1,"widowmaker":1,"hanzo":1,"cassidy":1,"bastion":1,"brigitte":2},
 "reaper":{"roadhog":2,"winston":2,"mauga":2,"ramattra":1,"mei":2,"bastion":2,"venture":1,"vendetta":1,"wuyang":1,"zenyatta":1,"lifeweaver":1,"moira":1,"reinhardt":2,"hazard":1,"junker-queen":1,"zarya":1},
-"reinhardt":{"roadhog":1,"sigma":1,"zarya":2,"sojourn":1},
-"roadhog":{"hazard":2,"doomfist":1,"sigma":1,"wrecking-ball":1,"venture":2,"vendetta":1,"winston":1,"reaper":1},
-"sigma":{"dva":1,"hazard":1,"doomfist":1,"mauga":1,"orisa":2,"reaper":1,"ashe":2,"cassidy":2,"hanzo":2,"widowmaker":2,"sojourn":2,"soldier-76":2,"emre":1,"freja":1,"torbjorn":1,"bastion":2,"illari":2,"domina":2},
+"reinhardt":{"roadhog":1,"domina":1,"sigma":1,"zarya":2},
+"roadhog":{"hazard":2,"doomfist":1,"sigma":1,"wrecking-ball":1,"venture":2,"vendetta":1,"winston":1},
+"sigma":{"dva":1,"hazard":1,"doomfist":1,"mauga":1,"orisa":2,"reaper":1,"ashe":2,"cassidy":2,"hanzo":2,"widowmaker":2,"sojourn":2,"soldier-76":2,"emre":1,"freja":1,"torbjorn":1,"bastion":2,"illari":2},
 "sojourn":{"doomfist":1,"roadhog":1,"junker-queen":1,"mauga":2,"orisa":2,"wrecking-ball":1,"ramattra":1,"ashe":2,"bastion":2,"reaper":1,"cassidy":1,"soldier-76":1,"torbjorn":1,"sombra":1,"vendetta":1,"venture":1,"anran":1,"juno":1,"illari":1,"mercy":2,"baptiste":1,"jetpack-cat":2},
 "soldier-76":{"reaper":1,"cassidy":1,"echo":2,"pharah":2,"sombra":2,"anran":1,"mercy":2,"lifeweaver":1,"juno":1,"jetpack-cat":2},
 "sombra":{"roadhog":1,"hazard":2,"sigma":1,"wrecking-ball":1,"widowmaker":1,"hanzo":1,"bastion":1,"echo":2,"venture":2,"wuyang":1,"zenyatta":1,"juno":2,"mercy":2,"lifeweaver":2,"ana":2,"reinhardt":1,"mei":2,"doomfist":1},
-"symmetra":{"dva":2,"reinhardt":2,"sigma":2,"brigitte":2,"mizuki":1,"genji":2,"tracer":1,"reaper":1,"sojourn":1},
+"symmetra":{"dva":2,"reinhardt":1,"sigma":2,"brigitte":2,"mizuki":1,"genji":2,"tracer":1,"reaper":1,"sojourn":1},
 "torbjorn":{"reinhardt":1,"hazard":1,"junker-queen":1,"winston":1,"wrecking-ball":1,"tracer":1,"anran":1,"genji":1,"cassidy":1,"reaper":1,"moira":2,"brigitte":1,"jetpack-cat":1},
 "tracer":{"doomfist":2,"hazard":2,"orisa":1,"wrecking-ball":2,"ramattra":1,"ashe":2,"reaper":1,"sojourn":1,"sombra":1,"hanzo":2,"junkrat":1,"venture":1,"widowmaker":1,"wuyang":2,"ana":2,"mercy":2,"kiriko":1,"zenyatta":2,"moira":1},
 "vendetta":{"reinhardt":2,"dva":2,"sigma":1,"ashe":1,"hanzo":1,"widowmaker":1,"bastion":1,"wuyang":2,"moira":1,"zenyatta":2,"kiriko":1,"ana":2,"baptiste":1},
@@ -1627,7 +1642,6 @@ HEROES.filter(h => h.role === 'SUPPORT').forEach(h => {
   if (suppCategories[id]) { suppCategories[id].flex = true; suppCategories[id].main = true; }
 });
 
-
 // ======================================================
 // TAB SWITCHING
 // ======================================================
@@ -1643,17 +1657,28 @@ function switchTab(tabId) {
 // ======================================================
 function renderMapGrid() {
   const grid = document.getElementById('mapGrid');
-  let html = `<div class="map-card ${selectedMap === 'all-maps' ? 'selected' : ''}" onclick="selectMap('all-maps', this)">
+  let html = '';
+  // "All Maps" section
+  html += `<div class="map-type-section">`;
+  html += `<div class="map-type-section-label">${t('filter_all')}</div>`;
+  html += `<div class="map-type-section-cards">`;
+  html += `<div class="map-card ${selectedMap === 'all-maps' ? 'selected' : ''}" onclick="selectMap('all-maps', this)">
     <div style="height:72px;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;">ALL</div>
     <div class="map-info"><div class="map-type">${t('filter_all')}</div>${t('all_maps')}</div></div>`;
+  html += `</div></div>`;
+  // Each map type section
   for (const [type, maps] of Object.entries(MAPS)) {
     const typeLabel = t(MAP_TYPE_I18N[type] || 'map_type_control');
+    html += `<div class="map-type-section">`;
+    html += `<div class="map-type-section-label">${typeLabel}</div>`;
+    html += `<div class="map-type-section-cards">`;
     maps.forEach(m => {
       const displayName = mapDisplayName(m.id, m.name);
       html += `<div class="map-card ${selectedMap === m.id ? 'selected' : ''}" onclick="selectMap('${m.id}', this)">
         <img src="${m.img}" alt="${m.name}" loading="lazy">
         <div class="map-info"><div class="map-type">${typeLabel}</div>${displayName}</div></div>`;
     });
+    html += `</div></div>`;
   }
   grid.innerHTML = html;
 }
